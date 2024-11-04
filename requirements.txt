@@ -1,3 +1,4 @@
+# Generic
 pydantic==2.9.2
 
 # Presentation
@@ -6,3 +7,6 @@ uvicorn==0.32.0
 
 # Persistence
 sqlmodel==0.0.22
+
+#Domain
+pydantic-settings==2.6.1
