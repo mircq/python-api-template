@@ -1,5 +1,5 @@
 from src.domain.entities.template_entity import TemplateEntity
-from src.presentation.DTOs.template_DTOs import PostTemplateInputDTO, PostTemplateOutputDTO
+from src.presentation.DTOs.templates.post_templates_input_dto import PostTemplateOutputDTO, PostTemplateInputDTO
 
 
 class PostTemplateMappers:
@@ -23,3 +23,4 @@ class PostTemplateMappers:
         """
 
         return TemplateEntity(**dto.model_dump())
+

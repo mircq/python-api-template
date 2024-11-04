@@ -9,7 +9,7 @@ class TemplateEntity(BaseModel):
 
     """
 
-    id: UUID4 = Field(
+    id: UUID4 | None = Field(
         title="id",
         description="Id of the entity",
         default_factory=uuid.uuid4

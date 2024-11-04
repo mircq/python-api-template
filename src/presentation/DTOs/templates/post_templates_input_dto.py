@@ -19,3 +19,4 @@ class PostTemplateOutputDTO(BaseModel):
         title="description",
         description="Entity description"
     )
+
