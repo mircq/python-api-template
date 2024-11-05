@@ -7,6 +7,10 @@ uvicorn==0.32.0
 
 # Persistence
 sqlmodel==0.0.22
+psycopg2-binary==2.9.10 # if using Postgres
+asyncio==3.4.3
+
+beanie==1.27.0
 
 #Domain
 pydantic-settings==2.6.1
