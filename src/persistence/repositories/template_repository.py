@@ -30,11 +30,14 @@ class TemplateRepository:
         :return:
         """
 
-        self.session.add(instance=entity)
-        await self.session.commit()
-        await self.session.refresh(entity)
+        #TODO check if this mapping can be avoided, or add a mapper instead
+        t: Template = Template(**entity.model_dump())
 
-        return Result.ok(value=entity)
+        self.session.add(instance=t)
+        await self.session.commit()
+        await self.session.refresh(t)
+
+        return Result.ok(value=t)
 
     #endregion
 

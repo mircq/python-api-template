@@ -10,7 +10,10 @@ sqlmodel==0.0.22
 psycopg2-binary==2.9.10 # if using Postgres
 asyncio==3.4.3
 
-beanie==1.27.0
+beanie==1.27.0 # if using Postgres
 
-#Domain
+# Domain
 pydantic-settings==2.6.1
+
+# Infrastructure
+redis==5.2.0
