@@ -5,15 +5,12 @@ from src.domain.results.result import Result
 
 
 class ITemplateService(ABC):
+	@abstractmethod
+	async def post(self, entity: TemplateEntity) -> Result[TemplateEntity]:
+		"""
 
-    @abstractmethod
-    async def post(self, entity: TemplateEntity) -> Result[TemplateEntity]:
+		:param entity:
+		:return:
+		"""
 
-        """
-
-        :param entity:
-        :return:
-        """
-
-        pass
-
+		pass

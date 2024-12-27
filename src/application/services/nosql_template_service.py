@@ -1,16 +1,15 @@
 from pydantic import UUID4
 
-from src.application.interfaces.template_interface import ITemplateService
 from src.domain.entities.patch_entity import PatchEntity
 from src.domain.entities.template_entity import TemplateEntity
 from src.domain.results.result import Result
 from src.domain.utilities.logger import logger
-from src.persistence.repositories.template_repository import TemplateRepository
+from src.persistence.repositories.nosql_template_repository import NoSQLTemplateRepository
 
 
-class TemplateService(ITemplateService):
+class NoSQLTemplateService:
 	"""
-	Utility class to forward API request to the appropriate persistence/infrastructure function, as well as
+	Utility class to forward API request to the appropriate NoSQL persistence/infrastructure function, as well as
 	implementing some logic.
 	"""
 
@@ -28,7 +27,7 @@ class TemplateService(ITemplateService):
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await TemplateRepository.post(entity=entity)
+		result: Result[TemplateEntity] = await NoSQLTemplateRepository.post(entity=entity)
 
 		logger.info(msg="End")
 
@@ -50,7 +49,7 @@ class TemplateService(ITemplateService):
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await TemplateRepository.get(id=id)
+		result: Result[TemplateEntity] = await NoSQLTemplateRepository.get(id=id)
 
 		logger.info(msg="End")
 
@@ -72,7 +71,7 @@ class TemplateService(ITemplateService):
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await TemplateRepository.delete(id=id)
+		result: Result[TemplateEntity] = await NoSQLTemplateRepository.delete(id=id)
 
 		logger.info(msg="End")
 
@@ -95,7 +94,7 @@ class TemplateService(ITemplateService):
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await TemplateRepository.put(id=id, entity=entity)
+		result: Result[TemplateEntity] = await NoSQLTemplateRepository.put(id=id, entity=entity)
 
 		logger.info(msg="End")
 
@@ -118,7 +117,7 @@ class TemplateService(ITemplateService):
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await TemplateRepository.patch(id=id, patches=patches)
+		result: Result[TemplateEntity] = await NoSQLTemplateRepository.patch(id=id, patches=patches)
 
 		logger.info(msg="End")
 

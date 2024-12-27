@@ -1,105 +1,219 @@
 from pydantic import UUID4
-# TODO check sqlalchemy dependency
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 
+# TODO check sqlalchemy dependency
+from sqlmodel import select
+import datetime
+
+from src.domain.entities.patch_entity import PatchEntity
 from src.domain.entities.template_entity import TemplateEntity
+from src.domain.errors.generic_errors import GenericErrors
 from src.domain.results.result import Result
-from src.domain.utilities.settings import settings
+from src.domain.utilities.exception_handler import exception_handler
+from src.domain.utilities.logger import logger
 from src.persistence.objects.template import Template
+from src.persistence.sql_database_manager import SQLDatabaseManager
+import jsonpatch
 
 
 class TemplateRepository:
+	# region POST
+	@exception_handler
+	@staticmethod
+	async def post(entity: TemplateEntity) -> Result[TemplateEntity]:
+		"""
+		Create a new Template.
 
-    def __init__(self):
 
-        url = f"{settings.relational_db_type}://{settings.relational_db_user}:{settings.relational_db_password}@{settings.relational_db_host}:{settings.relational_db_port}"
+		:param TemplateEntity entity: entity containing the information about the Template to be created.
+		:return: a Result object containing the created Template if function has been successful, a Result object containing
+		the error otherwise.
+		:rtype: Result[TemplateEntity]
+		"""
 
-        engine = create_async_engine(url=url)
+		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: entity={entity}")
 
-        self.session = AsyncSession(engine)
+		# TODO check if this mapping can be avoided, or add a mapper instead
+		template: Template = Template(**entity.model_dump())
 
-    #region POST
+		async with SQLDatabaseManager().get_session() as session:
+			session.add(instance=template)
+			await session.commit()
+			await session.refresh(template)
 
-    async def post(self, entity: TemplateEntity) -> Result[TemplateEntity]:
+		logger.info(msg="End")
 
-        """
+		return Result.ok(value=entity)
 
-        :param TemplateEntity entity:
-        :return:
-        """
+	# endregion
 
-        #TODO check if this mapping can be avoided, or add a mapper instead
-        t: Template = Template(**entity.model_dump())
+	# region GET
+	@exception_handler
+	@staticmethod
+	async def get(id: UUID4) -> Result[TemplateEntity]:
+		"""
+		Retrieve the Template with the given id.
 
-        self.session.add(instance=t)
-        await self.session.commit()
-        await self.session.refresh(t)
+		:param UUID4 id: id of the Template to be retrieved.
+		:return: a Result object containing the retrieved Template if function has been successful, a Result object containing
+		the error otherwise.
+		:rtype: Result[TemplateEntity]
+		"""
 
-        return Result.ok(value=t)
+		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: id={id}")
 
-    #endregion
+		statement = select(Template).where(Template.id == id)
 
-    #region GET
+		async with SQLDatabaseManager().get_session() as session:
+			results = await session.exec(statement=statement)
 
-    async def get(self, id: UUID4) -> Result[TemplateEntity]:
+			template = results.first()
 
-        """
+			if template is None:
+				logger.error(msg=f"No template with id={id} found")
+				return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
 
-        :param UUID4 id:
-        :return:
-        """
+			entity = Template(**template.model_dump())
 
-        statement = select(Template).where(Template.id == id)
+			"""
+            TODO alternative, to be tested
+            template = session.get(Template, id)
+            """
 
-        entity = self.session.exec(statement).first()
+		logger.info(msg="End")
 
-        return Result.ok(value=entity)
+		return Result.ok(value=entity)
 
-    #endregion
+	# endregion
 
-    # region DELETE
+	# region DELETE
+	@exception_handler
+	@staticmethod
+	async def delete(id: UUID4) -> Result[TemplateEntity]:
+		"""
+		Delete the Template with the given id.
 
-    async def delete(self, id: UUID4) -> Result[TemplateEntity]:
-        """
+		:param UUID4 id: id of the Template to be deleted.
+		:return: a Result object containing the deleted Template if function has been successful, a Result object containing
+		the error otherwise.
+		:rtype: Result[TemplateEntity]
+		"""
 
-        :param UUID4 id:
-        :return:
-        """
+		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: id={id}")
 
-        statement = select(Template).where(Template.id == id)
+		statement = select(Template).where(Template.id == id)
 
-        results = self.session.exec(statement)
+		async with SQLDatabaseManager().get_session() as session:
+			results = await session.exec(statement)
 
-        template = results.one()
+			template = results.first()
 
-        await self.session.delete(template)
-        await self.session.commit()
+			if template is None:
+				logger.error(msg=f"No template with id={id} found")
+				return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
 
-        return Result.ok(value=template)
+			await session.delete(template)
+			await session.commit()
 
-    # endregion
+			entity = Template(**template.model_dump())
 
-    #region UPDATE
+			"""
+            TODO alternative, to be tested
+            template = session.get(Template, id)
+            """
 
-    async def put(self, id: UUID4, entity: TemplateEntity) -> Result[TemplateEntity]:
-        """
+		logger.info(msg="End")
 
-        :param UUID4 id:
-        :return:
-        """
+		return Result.ok(value=entity)
 
-        statement = select(Template).where(Template.id == id)
-        results = self.session.exec(statement)
-        template = results.one()
+	# endregion
 
-        # TODO is there a way to do it dynamically?
-        template.description = entity.description
-        self.session.add(template)
-        await self.session.commit()
-        await self.session.refresh(template)
+	# region UPDATE
+	@exception_handler
+	@staticmethod
+	async def put(id: UUID4, entity: TemplateEntity) -> Result[TemplateEntity]:
+		"""
+		Replace the Template with the given id with the one passed as parameter.
 
-        return Result.ok(value=template)
+		:param UUID4 id: id of the Template to be replaced.
+		:param TemplateEntity entity: entity containing the new Template information.
+		:return: a Result object containing the updated Template if function has been successful, a Result object containing
+		the error otherwise.
+		:rtype: Result[TemplateEntity]
+		"""
 
-    #endregion
+		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: id={id}, entity={entity}")
+
+		statement = select(Template).where(Template.id == id)
+
+		async with SQLDatabaseManager().get_session() as session:
+			results = await session.exec(statement)
+			template = results.first()
+
+			if template is None:
+				logger.error(msg=f"No template with id={id} found")
+				return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
+
+			# TODO is there a way to do it dynamically?
+			template.message = entity.message
+			session.add(template)
+			await session.commit()
+			await session.refresh(template)
+
+			entity = Template(**template.model_dump())
+
+		logger.info(msg="End")
+
+		return Result.ok(value=entity)
+
+	# endregion
+
+	# TODO here should i send directly the patched entity?
+	# region PATCH
+	@exception_handler
+	@staticmethod
+	async def patch(id: UUID4, patches: list[PatchEntity]) -> Result[TemplateEntity]:
+		"""
+		Patch the Template with the given id with the list of patches passed as parameter.
+
+		:param UUID4 id: id of the Template to be replaced.
+		:param list[PatchEntity] patches: list containing patches information.
+		:return: a Result object containing the patched Template if function has been successful, a Result object containing
+		the error otherwise.
+		:rtype: Result[TemplateEntity]
+		"""
+
+		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: id={id}, patches={patches}")
+
+		async with SQLDatabaseManager().get_session() as session:
+			statement = select(Template).where(Template.id == id)
+			results = await session.exec(statement)
+			template = results.first()
+
+			if template is None:
+				logger.error(msg=f"No template with id={id} found")
+				return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
+
+			patched_template_dict = jsonpatch.apply_patch(
+				template.model_dump(), [patch.model_dump() for patch in patches]
+			)
+
+			patched_template = Template(**patched_template_dict)
+			patched_template.modification_date = datetime.datetime.now(tz=datetime.timezone.utc)
+			await session.delete(template)  # TODO: da cambiare
+			session.add(patched_template)
+			await session.commit()
+			await session.refresh(patched_template)
+
+			entity: TemplateEntity = TemplateEntity(**patched_template_dict)
+
+		logger.info(msg="End")
+
+		return Result.ok(value=entity)
+
+
+# endregion

@@ -13,7 +13,7 @@
 
 
 ## Project description
-
+This project is intended to be
 
 
 ## Install dependencies 

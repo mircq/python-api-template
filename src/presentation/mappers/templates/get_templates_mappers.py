@@ -3,15 +3,10 @@ from src.presentation.DTOs.templates.get_templates_output_dto import GetTemplate
 
 
 class GetTemplateMappers:
+	""" """
 
-    """
+	@staticmethod
+	def to_dto(entity: TemplateEntity) -> GetTemplateOutputDTO:
+		""" """
 
-    """
-
-    @staticmethod
-    def to_dto(entity: TemplateEntity) -> GetTemplateOutputDTO:
-        """
-
-        """
-
-        return GetTemplateOutputDTO(**entity.model_dump())
+		return GetTemplateOutputDTO(**entity.model_dump())

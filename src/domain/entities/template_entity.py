@@ -4,18 +4,8 @@ from pydantic import BaseModel, UUID4, Field
 
 
 class TemplateEntity(BaseModel):
+	""" """
 
-    """
+	id: UUID4 | None = Field(title="id", description="Id of the entity", default_factory=uuid.uuid4)
 
-    """
-
-    id: UUID4 | None = Field(
-        title="id",
-        description="Id of the entity",
-        default_factory=uuid.uuid4
-    )
-
-    description: str = Field(
-        title="description",
-        description="Description of the entity"
-    )
+	description: str = Field(title="description", description="Description of the entity")

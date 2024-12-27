@@ -1,0 +1,99 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/dockerfile
+    container_name: api
+    hostname: api
+    networks:
+      - template-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - LOG_LEVEL=info
+      - RELATIONAL_DB_TYPE=postgresql+asyncpg
+      - RELATIONAL_DB_HOST=postgres
+      - RELATIONAL_DB_PORT=5432
+      - RELATIONAL_DB_USER=postgres
+      - RELATIONAL_DB_PASSWORD=postgres
+      - RELATIONAL_DB_NAME=template
+      - NOSQL_DB_HOST=mongodb
+      - NOSQL_DB_PORT=27017
+      - NOSQL_DB_USER=mongodb
+      - NOSQL_DB_PASSWORD=mongodb
+      - VECTOR_DB_HOST=http://qdrant
+      - VECTOR_DB_PORT=6333
+      - VECTOR_DB_APIKEY=qdrant_api_key
+      - VECTOR_DB_COLLECTION_NAME=template
+      - LLM_HOST=http://llm
+      - LLM_PORT=11434
+      - LLM_NAME=llama3.1
+  postgres:
+    image: postgres:17
+    hostname: postgres
+    container_name: postgres
+    networks:
+      - template-network
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=template
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d template -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    hostname: qdrant
+    container_name: qdrant
+    networks:
+      - template-network
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    expose:
+      - 6333
+      - 6334
+      - 6335
+    volumes:
+      - ./qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__API_KEY=qdrant_api_key
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  mongodb:
+    image: mongo:6-jammy
+    hostname: mongodb
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongodb
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 3
+networks:
+  template-network:
+    driver: bridge
+    name: template-network

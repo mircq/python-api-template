@@ -10,65 +10,58 @@ from src.domain.utilities.singleton import Singleton
 
 
 class RedisClient(metaclass=Singleton):
+	"""
+	Utility class to perform basic operations on a Redis database.
+	"""
 
-    """
-    Utility class to perform basic operations on a Redis database.
-    """
+	def __init__(self):
+		self.redis = redis.Redis(
+			host=settings.REDIS_DB_HOST,
+			username=settings.REDIS_DB_USER,
+			password=settings.REDIS_DB_PASSWORD,
+			port=settings.REDIS_DB_PORT,
+			db=settings.REDIS_DB_NAME,
+		)
 
-    def __init__(self):
+	@exception_handler
+	def get(self, key: str) -> Result[str]:
+		"""
+		Retrieve the value associated to the given key.
 
-        self.redis = redis.Redis(
-            host=settings.REDIS_DB_HOST,
-            username=settings.REDIS_DB_USER,
-            password=settings.REDIS_DB_PASSWORD,
-            port=settings.REDIS_DB_PORT,
-            db=settings.REDIS_DB_NAME
-        )
+		:param str key: key for which the value must be retrieved.
+		:return: a Result object containing the value associated to the given key, or containing the error in case of
+		failure.
+		:rtype: Result[str]
+		"""
 
+		logger.info(msg="Start")
 
-    @exception_handler
-    def get(self, key: str) -> Result[str]:
+		value = self.redis.get(name=key)
 
-        """
-        Retrieve the value associated to the given key.
+		if value is None:
+			logger.error(msg=f"Entry with key={key} does not exist.")
+			return Result.fail(error=GenericErrors.not_found_error(key=key))
 
-        :param str key: key for which the value must be retrieved.
-        :return: a Result object containing the value associated to the given key, or containing the error in case of
-        failure.
-        :rtype: Result[str]
-        """
+		logger.info(msg="End")
 
-        logger.info(msg="Start")
+		return Result.ok(value=value)
 
-        value = self.redis.get(name=key)
+	@exception_handler
+	def set(self, key: str, value: str) -> Result[KeyValueEntity]:
+		"""
+		Set the value associated to the given key.
 
-        if value is None:
+		:param str key: key used to retrieve the value.
+		:param str value: value that must be saved,
+		:return: a Result object containing the value associated to the given key, or containing the error in case of
+		failure.
+		:rtype: Result[KeyValueEntity]
+		"""
 
-            logger.error(msg=f"Entry with key={key} does not exist.")
-            return Result.fail(error=GenericErrors.not_found_error(key=key))
+		logger.info(msg="Start")
 
-        logger.info(msg="End")
+		self.redis.set(name=key, value=value)
 
-        return Result.ok(value=value)
+		logger.info(msg="End")
 
-    @exception_handler
-    def set(self, key: str, value: str) -> Result[KeyValueEntity]:
-
-        """
-        Set the value associated to the given key.
-
-        :param str key: key used to retrieve the value.
-        :param str value: value that must be saved,
-        :return: a Result object containing the value associated to the given key, or containing the error in case of
-        failure.
-        :rtype: Result[KeyValueEntity]
-        """
-
-        logger.info(msg="Start")
-
-        self.redis.set(name=key, value=value)
-
-        logger.info(msg="End")
-
-        return Result.ok(value=KeyValueEntity(key=key, value=value))
-
+		return Result.ok(value=KeyValueEntity(key=key, value=value))

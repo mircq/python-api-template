@@ -4,24 +4,16 @@ from src.presentation.DTOs.templates.put_templates_output_dto import PutTemplate
 
 
 class PutTemplateMappers:
+	""" """
 
-    """
+	@staticmethod
+	def to_dto(entity: TemplateEntity) -> PutTemplateOutputDTO:
+		""" """
 
-    """
+		return PutTemplateOutputDTO(**entity.model_dump())
 
-    @staticmethod
-    def to_dto(entity: TemplateEntity) -> PutTemplateOutputDTO:
-        """
+	@staticmethod
+	def to_entity(dto: PutTemplateInputDTO) -> TemplateEntity:
+		""" """
 
-        """
-
-        return PutTemplateOutputDTO(**entity.model_dump())
-
-    @staticmethod
-    def to_entity(dto: PutTemplateInputDTO) -> TemplateEntity:
-        """
-
-        """
-
-        return TemplateEntity(**dto.model_dump())
-
+		return TemplateEntity(**dto.model_dump())

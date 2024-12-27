@@ -1,5 +1,2 @@
-
-
 class TemplateEndpoints:
-
-    pass
+	pass
