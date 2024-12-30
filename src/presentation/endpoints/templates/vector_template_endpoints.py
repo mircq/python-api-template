@@ -1,34 +1,30 @@
 from fastapi import APIRouter, HTTPException, Body, Path
 from pydantic import UUID4
 
-from src.application.services.template_service import TemplateService
 from src.application.services.vector_template_service import VectorTemplateService
-from src.domain.entities.template_entity import TemplateEntity
 from src.domain.entities.vector_database_template_entity import VectorDatabaseTemplateEntity
 from src.domain.results.result import Result
-from src.presentation.DTOs.templates.delete_templates_output_dto import DeleteTemplateOutputDTO
-from src.presentation.DTOs.templates.get_templates_output_dto import GetTemplateOutputDTO
-from src.presentation.DTOs.templates.post_templates_input_dto import PostTemplateInputDTO, PostTemplateOutputDTO
-from src.presentation.DTOs.templates.put_templates_input_dto import PutTemplateInputDTO
-from src.presentation.DTOs.templates.put_templates_output_dto import PutTemplateOutputDTO
-from src.presentation.examples.templates.delete_templates_request_examples import DELETE_TEMPLATES_PATH_EXAMPLE
-from src.presentation.examples.templates.delete_templates_response_examples import DELETE_TEMPLATES_RESPONSE_EXAMPLES
-from src.presentation.examples.templates.get_templates_request_examples import GET_TEMPLATES_PATH_EXAMPLE
-from src.presentation.examples.templates.get_templates_response_examples import GET_TEMPLATES_RESPONSE_EXAMPLES
-from src.presentation.examples.templates.post_templates_request_examples import POST_TEMPLATES_BODY_EXAMPLES
-from src.presentation.examples.templates.post_templates_response_examples import POST_TEMPLATES_RESPONSE_EXAMPLES
-from src.presentation.examples.templates.put_templates_request_examples import (
-	PUT_TEMPLATES_PATH_EXAMPLE,
-	PUT_TEMPLATES_BODY_EXAMPLES,
+from src.domain.utilities.logger import logger
+from src.presentation.DTOs.templates.vector.delete_templates_output_dto import DeleteTemplateOutputDTO
+from src.presentation.DTOs.templates.vector.post_templates_input_dto import PostTemplateInputDTO
+from src.presentation.DTOs.templates.vector.post_templates_output_dto import PostTemplateOutputDTO
+from src.presentation.DTOs.templates.vector.query_templates_input_dto import QueryTemplateInputDTO
+from src.presentation.DTOs.templates.vector.query_templates_output_dto import QueryTemplateOutputDTO
+from src.presentation.examples.templates.vector.delete_templates_request_examples import DELETE_TEMPLATES_PATH_EXAMPLE
+from src.presentation.examples.templates.vector.delete_templates_response_examples import (
+	DELETE_TEMPLATES_RESPONSE_EXAMPLES,
 )
-from src.presentation.examples.templates.put_templates_response_examples import PUT_TEMPLATES_RESPONSE_EXAMPLES
+from src.presentation.examples.templates.vector.post_templates_request_examples import POST_TEMPLATES_BODY_EXAMPLES
+from src.presentation.examples.templates.vector.post_templates_response_examples import POST_TEMPLATES_RESPONSE_EXAMPLES
+from src.presentation.examples.templates.vector.query_templates_request_examples import QUERY_TEMPLATES_BODY_EXAMPLES
+from src.presentation.examples.templates.vector.query_templates_response_examples import (
+	QUERY_TEMPLATES_RESPONSE_EXAMPLES,
+)
+from src.presentation.mappers.templates.vector.delete_templates_mappers import DeleteTemplateMappers
+from src.presentation.mappers.templates.vector.post_templates_mappers import PostTemplateMappers
+from src.presentation.mappers.templates.vector.query_templates_mappers import QueryTemplateMappers
 
-from src.presentation.mappers.templates.delete_templates_mappers import DeleteTemplateMappers
-from src.presentation.mappers.templates.get_templates_mappers import GetTemplateMappers
-from src.presentation.mappers.templates.post_template_mappers import PostTemplateMappers
-from src.presentation.mappers.templates.put_templates_mappers import PutTemplateMappers
-
-vector_template_router = APIRouter(prefix="vector/templates", tags=["Template", "Vector"])
+vector_template_router = APIRouter(prefix="/vector/templates", tags=["Vector"])
 
 
 # region POST
@@ -41,51 +37,53 @@ vector_template_router = APIRouter(prefix="vector/templates", tags=["Template", 
 )
 async def create_template(
 	dto: PostTemplateInputDTO = Body(examples=POST_TEMPLATES_BODY_EXAMPLES),
-) -> PostTemplateOutputDTO:
+) -> list[PostTemplateOutputDTO]:
 	"""
 
 	:param dto:
 	:return:
 	"""
 
-	entity: TemplateEntity = PostTemplateMappers.to_entity(dto=dto)
+	logger.info(msg="Calling POST /vector/templates")
 
-	result: Result[list[VectorDatabaseTemplateEntity]] = await VectorTemplateService().post(entity=entity)
+	result: Result[list[VectorDatabaseTemplateEntity]] = await VectorTemplateService.post(text=dto.text)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
 
-	output: PostTemplateOutputDTO = PostTemplateMappers.to_dto(entity=result.value)
+	output: list[PostTemplateOutputDTO] = [PostTemplateMappers.to_dto(entity=entity) for entity in result.value]
+
+	logger.info(msg="Successfully returning from POST /vector/templates")
 
 	return output
 
+
 @vector_template_router.post(
-	path="/{id}",
+	path="/query",
 	summary="Query a template.",
 	description="Perform a query on the 'templates' Vector database collection.",
-	responses=GET_TEMPLATES_RESPONSE_EXAMPLES,
+	responses=QUERY_TEMPLATES_RESPONSE_EXAMPLES,
 )
-async def query_template(id: UUID4 = Path(example=GET_TEMPLATES_PATH_EXAMPLE)) -> GetTemplateOutputDTO:
+async def query_template(
+	dto: QueryTemplateInputDTO = Body(examples=QUERY_TEMPLATES_BODY_EXAMPLES),
+) -> list[QueryTemplateOutputDTO]:
 	"""
 
-	:param UUID4 id:
+	:param QueryTemplateInputDTO dto:
 	:return:
 	"""
 
-	result: Result[TemplateEntity] = await TemplateService().get(id=id)
+	result: Result[list[VectorDatabaseTemplateEntity]] = await VectorTemplateService.query(text=dto.text)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
 
-	output: GetTemplateOutputDTO = GetTemplateMappers.to_dto(entity=result.value)
+	output: list[QueryTemplateOutputDTO] = [QueryTemplateMappers.to_dto(entity=entity) for entity in result.value]
 
 	return output
 
+
 # endregion
-
-
-
-
 
 
 # region DELETE
@@ -102,7 +100,7 @@ async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE
 	:return:
 	"""
 
-	result: Result[VectorDatabaseTemplateEntity] = await VectorTemplateService().delete(id=id)
+	result: Result[VectorDatabaseTemplateEntity] = await VectorTemplateService.delete(id=id)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)

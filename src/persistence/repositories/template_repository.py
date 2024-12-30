@@ -1,6 +1,4 @@
 from pydantic import UUID4
-
-# TODO check sqlalchemy dependency
 from sqlmodel import select
 import datetime
 
@@ -158,7 +156,7 @@ class TemplateRepository:
 				return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
 
 			# TODO is there a way to do it dynamically?
-			template.message = entity.message
+			template.description = entity.description
 			session.add(template)
 			await session.commit()
 			await session.refresh(template)
@@ -203,7 +201,7 @@ class TemplateRepository:
 			)
 
 			patched_template = Template(**patched_template_dict)
-			patched_template.modification_date = datetime.datetime.now(tz=datetime.timezone.utc)
+
 			await session.delete(template)  # TODO: da cambiare
 			session.add(patched_template)
 			await session.commit()

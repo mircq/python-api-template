@@ -2,6 +2,7 @@ from src.domain.utilities.logger import logger
 from src.domain.utilities.settings import SETTINGS
 from src.domain.utilities.singleton import Singleton
 import qdrant_client
+from qdrant_client.models import CollectionsResponse, Distance, VectorParams
 
 
 class VectorDBDatabaseManager(metaclass=Singleton):
@@ -21,14 +22,16 @@ class VectorDBDatabaseManager(metaclass=Singleton):
 			location=SETTINGS.VECTOR_DB_HOST,
 			port=SETTINGS.VECTOR_DB_PORT,
 			api_key=SETTINGS.VECTOR_DB_APIKEY,
-			https=False,
+			timeout=10,
+			https=SETTINGS.PRODUCTION_MODE,
 		)
 
 		self.sync_client = qdrant_client.QdrantClient(
 			location=SETTINGS.VECTOR_DB_HOST,
 			port=SETTINGS.VECTOR_DB_PORT,
 			api_key=SETTINGS.VECTOR_DB_APIKEY,
-			https=False,
+			timeout=10,
+			https=SETTINGS.PRODUCTION_MODE,
 		)
 
 	def get_async_client(self) -> qdrant_client.AsyncQdrantClient:
@@ -54,6 +57,22 @@ class VectorDBDatabaseManager(metaclass=Singleton):
 		logger.debug(msg="Start")
 
 		return self.sync_client
+
+	async def create_collection(self, collection_name: str):
+		""" """
+
+		logger.info(msg="Start")
+
+		collections: CollectionsResponse = await self.async_client.get_collections()
+
+		if collection_name not in [collection.name for collection in collections.collections]:
+			logger.warn(msg=f"Collection {collection_name} does not exist. Creating the collection.")
+			await self.async_client.create_collection(
+				collection_name=collection_name,
+				vectors_config=VectorParams(size=1024, distance=Distance.COSINE),
+			)
+
+		logger.info(msg="End")
 
 	@staticmethod
 	def get_collection(type: str) -> str:

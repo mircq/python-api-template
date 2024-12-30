@@ -26,11 +26,11 @@ from src.presentation.mappers.templates.get_templates_mappers import GetTemplate
 from src.presentation.mappers.templates.post_template_mappers import PostTemplateMappers
 from src.presentation.mappers.templates.put_templates_mappers import PutTemplateMappers
 
-template_router = APIRouter(prefix="nosql/templates", tags=["Template", "NoSQL"])
+nosql_template_router = APIRouter(prefix="/nosql/templates", tags=["NoSQL"])
 
 
 # region POST
-@template_router.post(
+@nosql_template_router.post(
 	path="/",
 	summary="Create a new template.",
 	description="Create a new template.",
@@ -62,7 +62,7 @@ async def create_template(
 
 
 # region GET
-@template_router.get(
+@nosql_template_router.get(
 	path="/{id}",
 	summary="Get a template.",
 	description="Retrieve a template from its id.",
@@ -89,7 +89,7 @@ async def get_template(id: UUID4 = Path(example=GET_TEMPLATES_PATH_EXAMPLE)) -> 
 
 
 # region DELETE
-@template_router.delete(
+@nosql_template_router.delete(
 	path="/{id}",
 	summary="Delete a template.",
 	description="Delete a template with the given id.",
@@ -116,7 +116,7 @@ async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE
 
 
 # region UPDATE
-@template_router.put(
+@nosql_template_router.put(
 	path="/{id}",
 	summary="Update a template.",
 	description="Update the template with the given id.",

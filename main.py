@@ -6,13 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.domain.utilities.logger import logger
 from src.domain.utilities.settings import SETTINGS
 from src.infrastructure.clients.langchain_client import LangchainClient
+from src.persistence.nosql_database_manager import NoSQLDatabaseManager
 from src.persistence.objects.template import Template # DO NOT REMOVE: this import makes the code create the table on the db.
 from src.persistence.sql_database_manager import SQLDatabaseManager
 from src.persistence.vector_db_database_manager import VectorDBDatabaseManager
 from src.presentation.endpoints.health.health_endpoints import health_router
-
-from src.presentation.endpoints.templates.template_endpoints import template_router
-
+from src.presentation.endpoints.templates.sql_template_endpoints import sql_template_router
+from src.presentation.endpoints.templates.nosql_template_endpoints import nosql_template_router
+from src.presentation.endpoints.templates.vector_template_endpoints import vector_template_router
 
 # TODO it is incorrect to directly call persistence (?)
 @asynccontextmanager
@@ -27,12 +28,17 @@ async def lifespan(app: FastAPI):
 
 	# Initialize SQL database connection and create tables
 	logger.info(msg="Initializing SQL database connection.")
-	#await SQLDatabaseManager().create_tables()
+	await SQLDatabaseManager().create_tables()
 	logger.info(msg="SQL database connection correctly initialized.")
+
+	# Initialize NoSQL database connection and create tables
+	logger.info(msg="Initializing NoSQL database connection.")
+	await NoSQLDatabaseManager().create_collections()
+	logger.info(msg="NoSQL database connection correctly initialized.")
 
 	# Initialize Vector database connection
 	logger.info(msg="Initializing Vector database connection.")
-	#VectorDBDatabaseManager()
+	await VectorDBDatabaseManager().create_collection(collection_name=SETTINGS.VECTOR_DB_COLLECTION_NAME)
 	logger.info(msg="Vector database connection correctly initialized.")
 
 	# Initialize Langchain agent
@@ -56,7 +62,9 @@ app = FastAPI(
 
 # Include endpoints routers
 app.include_router(router=health_router)
-app.include_router(router=template_router)
+app.include_router(router=sql_template_router)
+app.include_router(router=nosql_template_router)
+app.include_router(router=vector_template_router)
 
 app.add_middleware(
 	CORSMiddleware,

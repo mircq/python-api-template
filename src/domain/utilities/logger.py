@@ -54,4 +54,4 @@ match SETTINGS.LOG_LEVEL:
 	case _:
 		log_level = logging.INFO
 
-logger = Logger(name="rag-api", level=log_level)
+logger = Logger(name="python-api-template", level=log_level)

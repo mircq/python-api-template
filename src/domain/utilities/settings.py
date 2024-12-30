@@ -7,6 +7,10 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
 	PORT: int = Field(title="PORT", description="Port on which the microservice is exposed.", default=8000)
 
+	PRODUCTION_MODE: bool = Field(
+		title="PRODUCTION_MODE", description="Whether to enable or not production mode", default=False
+	)
+
 	LOG_LEVEL: Literal["debug", "info", "warning", "error"] = Field(
 		title="LOG_LEVEL", description="Level for log display.", default="info"
 	)
@@ -53,6 +57,12 @@ class Settings(BaseSettings):
 		title="VECTOR_DB_APIKEY", description="Api key for accessing vector database.", default=None
 	)
 
+	VECTOR_DB_COLLECTION_NAME: str | None = Field(
+		title="VECTOR_DB_COLLECTION_NAME",
+		description="Name of the collection used in the vector database.",
+		default=None,
+	)
+
 	# endregion
 
 	# region KEY_VALUE_DB
@@ -95,11 +105,15 @@ class Settings(BaseSettings):
 
 	# region AI
 
-	LLM_HOST: str | None = Field(title="LLM_HOST", description="Host on which the LLM is deployed.", default=None)
+	EMBEDDER_HOST: str | None = Field(
+		title="EMBEDDER_HOST", description="Host on which the embedder is deployed.", default=None
+	)
 
-	LLM_PORT: str | None = Field(title="LLM_PORT", description="Port on which the LLM is exposed.", default=None)
+	EMBEDDER_PORT: int | None = Field(
+		title="EMBEDDER_PORT", description="Port on which the embedder is exposed.", default=None
+	)
 
-	LLM_NAME: int | None = Field(title="LLM_NAME", description="Name of the LLM.", default=None)
+	EMBEDDER_NAME: str | None = Field(title="EMBEDDER_NAME", description="Name of the embedder.", default=None)
 
 	# endregion
 

@@ -86,14 +86,16 @@ class NoSQLTemplateRepository:
 		logger.info(msg="Start")
 
 		template: NoSQLTemplate = NoSQLTemplate(**entity.model_dump())
+		template.id = id
+		template.replace()
 
-		result = await NoSQLTemplate.get(document_id=id)
-
-		if result is None:
-			logger.error(msg=f"Entry of type template with key={id} does not exist.")
-			return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
-
-		await result.update(template)
+		# result = await NoSQLTemplate.get(document_id=id)
+		#
+		# if result is None:
+		# 	logger.error(msg=f"Entry of type template with key={id} does not exist.")
+		# 	return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
+		#
+		# await result.update(template)
 
 		template: TemplateEntity = TemplateEntity(**result.model_dump())
 

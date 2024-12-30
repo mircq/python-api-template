@@ -14,6 +14,8 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+      embedder-downloader:
+        condition: service_completed_successfully
     ports:
       - "8000:8000"
     environment:
@@ -29,13 +31,14 @@ services:
       - NOSQL_DB_PORT=27017
       - NOSQL_DB_USER=mongodb
       - NOSQL_DB_PASSWORD=mongodb
+      - NOSQL_DB_NAME=template
       - VECTOR_DB_HOST=http://qdrant
       - VECTOR_DB_PORT=6333
       - VECTOR_DB_APIKEY=qdrant_api_key
       - VECTOR_DB_COLLECTION_NAME=template
-      - LLM_HOST=http://llm
-      - LLM_PORT=11434
-      - LLM_NAME=llama3.1
+      - EMBEDDER_HOST=http://llm
+      - EMBEDDER_PORT=11434
+      - EMBEDDER_NAME=mxbai-embed-large
   postgres:
     image: postgres:17
     hostname: postgres
@@ -84,6 +87,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mongodb
       - MONGO_INITDB_ROOT_PASSWORD=mongodb
+      - MONGO_INITDB_DATABASE=template
     ports:
       - '27017:27017'
     volumes:
@@ -93,6 +97,42 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
+  embedder:
+    image: ollama/ollama:0.5.1
+    hostname: embedder
+    container_name: embedder
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1
+    networks:
+      - template-network
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_embedder_data:/root/.ollama
+# to use GPU decomment the following lines
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: all
+#              capabilities: [gpu]
+    healthcheck:
+      test: "ollama list || exit 1"
+      interval: 5s
+      timeout: 20s
+      retries: 2
+      start_period: 10s
+  embedder-downloader:
+    image: curlimages/curl:8.11.0
+    container_name: embedder-downloader
+    networks:
+      - template-network
+    command: >
+      http://embedder:11434/api/pull -d '{"name": "mxbai-embed-large"}'
+    depends_on:
+      embedder:
+        condition: service_healthy
 networks:
   template-network:
     driver: bridge

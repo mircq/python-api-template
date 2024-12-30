@@ -1,5 +1,6 @@
 from src.domain.entities.vector_database_template_entity import VectorDatabaseTemplateEntity
 from src.domain.entities.vector_database_template_payload_entity import VectorDatabaseTemplatePayloadEntity
+from src.domain.entities.vector_entity import VectorEntity
 from src.domain.errors.generic_errors import GenericErrors
 from src.domain.results.result import Result
 from src.domain.utilities.exception_handler import exception_handler
@@ -31,7 +32,9 @@ class VectorTemplateRepository:
 
 		point: PointStruct = PointStruct(
 			id=str(entity.id),
-			vector={entity.vector.name: entity.vector.vector},
+			vector={entity.vector.name: entity.vector.vector}
+			if isinstance(entity.vector, VectorEntity)
+			else entity.vector,
 			payload=entity.payload.model_dump(),
 		)
 
@@ -66,6 +69,7 @@ class VectorTemplateRepository:
 			.retrieve(
 				collection_name=VectorDBDatabaseManager().get_collection(VectorDatabaseTemplateEntity.__name__),
 				ids=[str(id)],
+				with_vectors=True,
 			)
 		)
 

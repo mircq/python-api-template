@@ -20,22 +20,26 @@ class NoSQLDatabaseManager(metaclass=Singleton):
 		"""
 
 		logger.info(msg="Start")
+		logger.debug(msg=f"Connecting to mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}")
 
 		self.async_client = AsyncIOMotorClient(
-			f"mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}/{SETTINGS.NOSQL_DB_NAME}"
+			f"mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}"
 		)
 
 		logger.info(msg="End")
 
-	async def create_tables(self) -> None:
+	async def create_collections(self) -> None:
 		"""
-		Create NoSQL database tables.
+		Create NoSQL database collections.
 		"""
 
 		logger.info(msg="Start")
-
+		logger.debug(msg=f"Trying to create tables on database {self.async_client[SETTINGS.NOSQL_DB_NAME]}")
 		# Initialize beanie with the Product document class
-		await init_beanie(database=self.async_client.db_name, document_models=[NoSQLTemplate])
+		await init_beanie(
+			self.async_client[SETTINGS.NOSQL_DB_NAME],
+			document_models=["src.persistence.objects.nosql_template.NoSQLTemplate"]
+		)
 
 		logger.info(msg="End")
 
