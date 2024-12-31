@@ -7,7 +7,7 @@ from src.domain.utilities.logger import logger
 from src.persistence.objects.nosql_template import NoSQLTemplate
 from pydantic import UUID4
 import jsonpatch
-
+from beanie.exceptions import DocumentNotFound
 
 class NoSQLTemplateRepository:
 	""" """
@@ -87,21 +87,17 @@ class NoSQLTemplateRepository:
 
 		template: NoSQLTemplate = NoSQLTemplate(**entity.model_dump())
 		template.id = id
-		template.replace()
+		try:
+			await template.replace()
+		except (ValueError, DocumentNotFound):
+			logger.error(msg=f"Entry of type template with key={id} does not exist.")
+			return Result.fail(error=GenericErrors.not_found_error(key=str(id), type="template"))
 
-		# result = await NoSQLTemplate.get(document_id=id)
-		#
-		# if result is None:
-		# 	logger.error(msg=f"Entry of type template with key={id} does not exist.")
-		# 	return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
-		#
-		# await result.update(template)
-
-		template: TemplateEntity = TemplateEntity(**result.model_dump())
+		result: TemplateEntity = TemplateEntity(**template.model_dump())
 
 		logger.info(msg="End")
 
-		return Result.ok(value=template)
+		return Result.ok(value=result)
 
 	# endregion
 
@@ -151,6 +147,7 @@ class NoSQLTemplateRepository:
 		"""
 
 		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: id={id}, patches={patches}")
 
 		result = await NoSQLTemplate.get(document_id=id)
 
@@ -158,15 +155,19 @@ class NoSQLTemplateRepository:
 			logger.error(msg=f"Entry of type template with key={id} does not exist.")
 			return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
 
-		patched_template = jsonpatch.apply_patch(doc=result.model_dump(), patch=patches)
+		patched_template_dict: dict = jsonpatch.apply_patch(doc=result.model_dump(), patch=[patch.model_dump() for patch in patches])
 
-		# TODO check
-		await result.update(patched_template)
+		patched_template: NoSQLTemplate = NoSQLTemplate(**patched_template_dict)
+		patched_template.id = id
 
-		template: TemplateEntity = TemplateEntity(**patched_template)
+		try:
+			await patched_template.replace()
+		except (ValueError, DocumentNotFound):
+			logger.error(msg=f"Entry of type template with key={id} does not exist.")
+			return Result.fail(error=GenericErrors.not_found_error(key=str(id), type="template"))
 
 		logger.info(msg="End")
 
-		return Result.ok(value=template)
+		return Result.ok(value=patched_template)
 
 	# endregion

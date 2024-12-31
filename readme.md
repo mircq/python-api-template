@@ -59,3 +59,23 @@ To format the code, launch the following command:
 ruff format 
 ```
 
+## Docs
+
+From project root,
+
+sphinx-quickstart docs
+
+This will present to you a series of questions required to create the basic directory and configuration layout for your project inside the docs folder. To proceed, answer each question as follows:
+
+> Separate source and build directories (y/n) [n]: Write “y” (without quotes) and press Enter.
+
+> Project name: Write “Lumache” (without quotes) and press Enter.
+
+> Author name(s): Write “Graziella” (without quotes) and press Enter.
+
+> Project release []: Write “0.1” (without quotes) and press Enter.
+
+> Project language [en]: Leave it empty (the default, English) and press Enter.
+
+
+sphinx-build -M html docs/source/ docs/build/

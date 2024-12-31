@@ -3,6 +3,7 @@ from pydantic import UUID4
 from src.domain.entities.patch_entity import PatchEntity
 from src.domain.entities.template_entity import TemplateEntity
 from src.domain.results.result import Result
+from src.domain.utilities.exception_handler import exception_handler
 from src.domain.utilities.logger import logger
 from src.persistence.repositories.nosql_template_repository import NoSQLTemplateRepository
 
@@ -14,8 +15,9 @@ class NoSQLTemplateService:
 	"""
 
 	# region POST
-
-	async def post(self, entity: TemplateEntity) -> Result[TemplateEntity]:
+	@exception_handler
+	@staticmethod
+	async def post(entity: TemplateEntity) -> Result[TemplateEntity]:
 		"""
 		Create a new template.
 
@@ -36,8 +38,9 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region GET
-
-	async def get(self, id: UUID4) -> Result[TemplateEntity]:
+	@exception_handler
+	@staticmethod
+	async def get(id: UUID4) -> Result[TemplateEntity]:
 		"""
 		Retrieve a template from its id.
 
@@ -58,8 +61,9 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region DELETE
-
-	async def delete(self, id: UUID4) -> Result[TemplateEntity]:
+	@exception_handler
+	@staticmethod
+	async def delete(id: UUID4) -> Result[TemplateEntity]:
 		"""
 		Delete a template from its id.
 
@@ -80,8 +84,9 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region PUT
-
-	async def put(self, id: UUID4, entity: TemplateEntity) -> Result[TemplateEntity]:
+	@exception_handler
+	@staticmethod
+	async def put(id: UUID4, entity: TemplateEntity) -> Result[TemplateEntity]:
 		"""
 		Update a template from its id and the given entity.
 
@@ -103,8 +108,9 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region PATCH
-
-	async def patch(self, id: UUID4, patches: list[PatchEntity]) -> Result[TemplateEntity]:
+	@exception_handler
+	@staticmethod
+	async def patch(id: UUID4, patches: list[PatchEntity]) -> Result[TemplateEntity]:
 		"""
 		Patch a template from its id and the given entity.
 

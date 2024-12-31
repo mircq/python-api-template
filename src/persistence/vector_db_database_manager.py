@@ -3,6 +3,7 @@ from src.domain.utilities.settings import SETTINGS
 from src.domain.utilities.singleton import Singleton
 import qdrant_client
 from qdrant_client.models import CollectionsResponse, Distance, VectorParams
+import httpx
 
 
 class VectorDBDatabaseManager(metaclass=Singleton):
@@ -33,6 +34,17 @@ class VectorDBDatabaseManager(metaclass=Singleton):
 			timeout=10,
 			https=SETTINGS.PRODUCTION_MODE,
 		)
+
+	def health_check(self):
+
+		# Use the `http` attribute to make a raw HTTP request to the /health endpoint
+		response = httpx.get(url=f"{self.sync_client.http.client.host}/healthz")
+
+		if response.status_code == 200:
+			logger.info(msg="Qdrant is healthy")
+
+		logger.error(msg="Qdrant is not healthy")
+		raise Exception
 
 	def get_async_client(self) -> qdrant_client.AsyncQdrantClient:
 		"""

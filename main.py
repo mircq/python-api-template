@@ -38,6 +38,7 @@ async def lifespan(app: FastAPI):
 
 	# Initialize Vector database connection
 	logger.info(msg="Initializing Vector database connection.")
+	VectorDBDatabaseManager().health_check()
 	await VectorDBDatabaseManager().create_collection(collection_name=SETTINGS.VECTOR_DB_COLLECTION_NAME)
 	logger.info(msg="Vector database connection correctly initialized.")
 
