@@ -6,7 +6,6 @@ from src.domain.utilities.singleton import Singleton
 
 from beanie import init_beanie
 
-from src.persistence.objects.nosql_template import NoSQLTemplate
 
 
 class NoSQLDatabaseManager(metaclass=Singleton):
@@ -20,7 +19,9 @@ class NoSQLDatabaseManager(metaclass=Singleton):
 		"""
 
 		logger.info(msg="Start")
-		logger.debug(msg=f"Connecting to mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}")
+		logger.debug(
+			msg=f"Connecting to mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}"
+		)
 
 		self.async_client = AsyncIOMotorClient(
 			f"mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}"
@@ -38,7 +39,7 @@ class NoSQLDatabaseManager(metaclass=Singleton):
 		# Initialize beanie with the Product document class
 		await init_beanie(
 			self.async_client[SETTINGS.NOSQL_DB_NAME],
-			document_models=["src.persistence.objects.nosql_template.NoSQLTemplate"]
+			document_models=["src.persistence.objects.nosql_template.NoSQLTemplate"],
 		)
 
 		logger.info(msg="End")

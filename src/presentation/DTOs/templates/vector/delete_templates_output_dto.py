@@ -4,9 +4,7 @@ from src.presentation.DTOs.templates.vector.template_payload_dto import Template
 
 
 class DeleteTemplateOutputDTO(BaseModel):
-	"""
-	Represents the output DTO returned after the deletion of a 'template' point.
-	"""
+	"""Represents the output DTO returned after the deletion of a templates point."""
 
 	id: UUID4 = Field(title="id", description="Id of the point into the Vector database collection.")
 

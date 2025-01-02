@@ -39,9 +39,12 @@ async def create_template(
 	dto: PostTemplateInputDTO = Body(examples=POST_TEMPLATES_BODY_EXAMPLES),
 ) -> list[PostTemplateOutputDTO]:
 	"""
+	Create a new ``template``.
 
-	:param dto:
-	:return:
+	:param PostTemplateInputDTO dto: an object containing the information used to initialize the ``template``
+	:return: the created ``template``
+	:rtype: list[PostTemplateOutputDTO]
+	:raises: HTTPException
 	"""
 
 	logger.info(msg="Calling POST /vector/templates")
@@ -68,10 +71,15 @@ async def query_template(
 	dto: QueryTemplateInputDTO = Body(examples=QUERY_TEMPLATES_BODY_EXAMPLES),
 ) -> list[QueryTemplateOutputDTO]:
 	"""
+	Query for a ``template`` similar to the given query.
 
-	:param QueryTemplateInputDTO dto:
-	:return:
+	:param QueryTemplateInputDTO dto: an object containing the user query
+	:return: the created ``template``
+	:rtype: list[QueryTemplateOutputDTO]
+	:raises: HTTPException
 	"""
+
+	logger.info(msg="Calling POST /vector/templates/query")
 
 	result: Result[list[VectorDatabaseTemplateEntity]] = await VectorTemplateService.query(text=dto.text)
 
@@ -79,6 +87,8 @@ async def query_template(
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
 
 	output: list[QueryTemplateOutputDTO] = [QueryTemplateMappers.to_dto(entity=entity) for entity in result.value]
+
+	logger.info(msg="Successfully returning from POST /vector/templates/query")
 
 	return output
 
@@ -95,10 +105,15 @@ async def query_template(
 )
 async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE)) -> DeleteTemplateOutputDTO:
 	"""
+	Delete the ``template`` with the given id.
 
-	:param UUID4 id:
-	:return:
+	:param UUID4 id: id of the ``template`` to delete.
+	:return: the deleted ``template`` if it exists.
+	:rtype: DeleteTemplateOutputDTO
+	:raises: HTTPException
 	"""
+
+	logger.info(msg="Calling DELETE /vector/templates")
 
 	result: Result[VectorDatabaseTemplateEntity] = await VectorTemplateService.delete(id=id)
 
@@ -106,6 +121,8 @@ async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
 
 	output: DeleteTemplateOutputDTO = DeleteTemplateMappers.to_dto(entity=result.value)
+
+	logger.info(msg="Successfully returning from DELETE /vector/templates")
 
 	return output
 

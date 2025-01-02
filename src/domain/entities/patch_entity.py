@@ -4,9 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class PatchEntity(BaseModel):
-	"""
-	Represents a patch object.
-	"""
+	"""Represents a patch object."""
 
 	op: Literal["add", "remove", "test", "replace"] = Field(
 		title="op", description="Operation type: one between ['add', 'remove', 'test', 'replace']"

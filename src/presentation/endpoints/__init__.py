@@ -1,2 +1,1 @@
-class TemplateEndpoints:
-	pass
+"""Microservice endpoints"""

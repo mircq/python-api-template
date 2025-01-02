@@ -79,3 +79,5 @@ This will present to you a series of questions required to create the basic dire
 
 
 sphinx-build -M html docs/source/ docs/build/
+
+https://www.aahilm.com/blog/documenting-large-projects-with-sphinx

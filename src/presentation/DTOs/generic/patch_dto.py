@@ -2,9 +2,11 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+"""aaa"""
+
 
 class PatchDTO(BaseModel):
-	""" """
+	"""Represents a patch object"""
 
 	op: Literal["add", "remove", "test", "replace"] = Field(
 		title="op", description="Operation type (one between 'add', 'remove', 'test', 'replace')."

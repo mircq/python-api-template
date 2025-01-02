@@ -1,6 +1,5 @@
 from pydantic import UUID4
 from sqlmodel import select
-import datetime
 
 from src.domain.entities.patch_entity import PatchEntity
 from src.domain.entities.template_entity import TemplateEntity
@@ -9,7 +8,7 @@ from src.domain.results.result import Result
 from src.domain.utilities.exception_handler import exception_handler
 from src.domain.utilities.logger import logger
 from src.persistence.objects.template import Template
-from src.persistence.sql_database_manager import SQLDatabaseManager
+from src.persistence.managers.sql_database_manager import SQLDatabaseManager
 import jsonpatch
 
 

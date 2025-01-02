@@ -5,7 +5,7 @@ from src.domain.errors.generic_errors import GenericErrors
 from src.domain.results.result import Result
 from src.domain.utilities.exception_handler import exception_handler
 from src.domain.utilities.logger import logger
-from src.persistence.vector_db_database_manager import VectorDBDatabaseManager
+from src.persistence.managers.vector_db_database_manager import VectorDBDatabaseManager
 from qdrant_client.models import PointStruct
 from pydantic import UUID4
 from qdrant_client.models import ScoredPoint, Record

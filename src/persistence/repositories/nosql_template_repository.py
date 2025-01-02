@@ -9,8 +9,9 @@ from pydantic import UUID4
 import jsonpatch
 from beanie.exceptions import DocumentNotFound
 
+
 class NoSQLTemplateRepository:
-	""" """
+	"""Repository to perform operations on ``templates`` NoSQL collection."""
 
 	# region POST
 
@@ -155,7 +156,9 @@ class NoSQLTemplateRepository:
 			logger.error(msg=f"Entry of type template with key={id} does not exist.")
 			return Result.fail(error=GenericErrors.not_found_error(type="template", key=id))
 
-		patched_template_dict: dict = jsonpatch.apply_patch(doc=result.model_dump(), patch=[patch.model_dump() for patch in patches])
+		patched_template_dict: dict = jsonpatch.apply_patch(
+			doc=result.model_dump(), patch=[patch.model_dump() for patch in patches]
+		)
 
 		patched_template: NoSQLTemplate = NoSQLTemplate(**patched_template_dict)
 		patched_template.id = id

@@ -4,9 +4,7 @@ from src.presentation.DTOs.templates.vector.template_payload_dto import Template
 
 
 class PostTemplateOutputDTO(BaseModel):
-	"""
-	Represents the output DTO returned after embeddings creation.
-	"""
+	"""Represents the output DTO returned after embeddings creation."""
 
 	id: UUID4 = Field(title="id", description="Id of the point into the Vector database collection.")
 

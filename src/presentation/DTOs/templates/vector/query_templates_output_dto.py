@@ -4,9 +4,7 @@ from src.presentation.DTOs.templates.vector.template_payload_dto import Template
 
 
 class QueryTemplateOutputDTO(BaseModel):
-	"""
-	Represents the output DTO returned after querying the 'template' collection.
-	"""
+	"""Represents the output DTO returned after querying the templates collection."""
 
 	id: UUID4 = Field(title="id", description="Id of the point into the Vector database collection.")
 

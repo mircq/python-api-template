@@ -36,7 +36,6 @@ class VectorDBDatabaseManager(metaclass=Singleton):
 		)
 
 	def health_check(self):
-
 		# Use the `http` attribute to make a raw HTTP request to the /health endpoint
 		response = httpx.get(url=f"{self.sync_client.http.client.host}/healthz")
 

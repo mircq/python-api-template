@@ -5,7 +5,7 @@ from src.domain.errors.generic_errors import GenericErrors
 from src.domain.results.result import Result
 from src.domain.utilities.exception_handler import exception_handler
 from src.domain.utilities.logger import logger
-from src.domain.utilities.settings import settings
+from src.domain.utilities.settings import SETTINGS
 from src.domain.utilities.singleton import Singleton
 
 
@@ -16,11 +16,11 @@ class RedisClient(metaclass=Singleton):
 
 	def __init__(self):
 		self.redis = redis.Redis(
-			host=settings.REDIS_DB_HOST,
-			username=settings.REDIS_DB_USER,
-			password=settings.REDIS_DB_PASSWORD,
-			port=settings.REDIS_DB_PORT,
-			db=settings.REDIS_DB_NAME,
+			host=SETTINGS.REDIS_DB_HOST,
+			username=SETTINGS.REDIS_DB_USER,
+			password=SETTINGS.REDIS_DB_PASSWORD,
+			port=SETTINGS.REDIS_DB_PORT,
+			db=SETTINGS.REDIS_DB_NAME,
 		)
 
 	@exception_handler

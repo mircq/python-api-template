@@ -6,10 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.domain.utilities.logger import logger
 from src.domain.utilities.settings import SETTINGS
 from src.infrastructure.clients.langchain_client import LangchainClient
-from src.persistence.nosql_database_manager import NoSQLDatabaseManager
-from src.persistence.objects.template import Template # DO NOT REMOVE: this import makes the code create the table on the db.
-from src.persistence.sql_database_manager import SQLDatabaseManager
-from src.persistence.vector_db_database_manager import VectorDBDatabaseManager
+from src.persistence.managers.nosql_database_manager import NoSQLDatabaseManager
+from src.persistence.managers.sql_database_manager import SQLDatabaseManager
+from src.persistence.managers.vector_db_database_manager import VectorDBDatabaseManager
 from src.presentation.endpoints.health.health_endpoints import health_router
 from src.presentation.endpoints.templates.sql_template_endpoints import sql_template_router
 from src.presentation.endpoints.templates.nosql_template_endpoints import nosql_template_router
