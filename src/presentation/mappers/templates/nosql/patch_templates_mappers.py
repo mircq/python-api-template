@@ -4,11 +4,18 @@ from src.presentation.DTOs.templates.nosql.patch_templates_output_dto import Pat
 
 
 class PatchTemplateMappers:
-	""" """
+	"""Mappers to transform TemplateEntity into PatchTemplateOutputDTO, or PatchTemplateInputDTO into TemplateEntity"""
 
 	@staticmethod
 	def to_dto(entity: TemplateEntity) -> PatchTemplateOutputDTO:
-		""" """
+		"""
+		Transforms a TemplateEntity object into a PatchTemplateOutputDTO.
+
+		:param TemplateEntity entity: object to be transformed.
+		:return: a PatchTemplateOutputDTO object obtained by the given TemplateEntity object.
+		:rtype: PatchTemplateOutputDTO
+		"""
+
 		logger.info(msg="Start")
 		logger.debug(msg=f"Input params: entity={entity}")
 

@@ -24,4 +24,4 @@ class GetTemplateMappers:
 		logger.info(msg="End")
 		logger.debug(msg=f"Return value={dto}")
 
-		return GetTemplateOutputDTO
+		return dto

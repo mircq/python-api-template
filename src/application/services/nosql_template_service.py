@@ -15,8 +15,8 @@ class NoSQLTemplateService:
 	"""
 
 	# region POST
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def post(entity: TemplateEntity) -> Result[TemplateEntity]:
 		"""
 		Create a new template.
@@ -38,8 +38,8 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region GET
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def get(id: UUID4) -> Result[TemplateEntity]:
 		"""
 		Retrieve a template from its id.
@@ -61,8 +61,8 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region DELETE
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def delete(id: UUID4) -> Result[TemplateEntity]:
 		"""
 		Delete a template from its id.
@@ -84,8 +84,8 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region PUT
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def put(id: UUID4, entity: TemplateEntity) -> Result[TemplateEntity]:
 		"""
 		Update a template from its id and the given entity.
@@ -108,8 +108,8 @@ class NoSQLTemplateService:
 	# endregion
 
 	# region PATCH
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def patch(id: UUID4, patches: list[PatchEntity]) -> Result[TemplateEntity]:
 		"""
 		Patch a template from its id and the given entity.

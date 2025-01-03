@@ -4,11 +4,17 @@ from src.presentation.DTOs.templates.vector.post_templates_output_dto import Pos
 
 
 class PostTemplateMappers:
-	""" """
+	"""Mappers to transform VectorDatabaseTemplateEntity into PostTemplateOutputDTO, or PostTemplateInputDTO into VectorDatabaseTemplateEntity"""
 
 	@staticmethod
 	def to_dto(entity: VectorDatabaseTemplateEntity) -> PostTemplateOutputDTO:
-		""" """
+		"""
+		Transforms a VectorDatabaseTemplateEntity object into a PostTemplateOutputDTO.
+
+		:param VectorDatabaseTemplateEntity entity: object to be transformed.
+		:return: a PostTemplateOutputDTO object obtained by the given VectorDatabaseTemplateEntity object.
+		:rtype: PostTemplateOutputDTO
+		"""
 
 		logger.info(msg="Start")
 		logger.debug(msg=f"Input params: entity={entity}")

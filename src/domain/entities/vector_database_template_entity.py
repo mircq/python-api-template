@@ -5,9 +5,7 @@ from src.domain.entities.vector_database_template_payload_entity import VectorDa
 
 
 class VectorDatabaseTemplateEntity(PointEntity):
-	"""
-	Represents the object stored within the 'templates' collection within the Vector database.
-	"""
+	"""Represents the object stored within the ``templates`` collection within the Vector database."""
 
 	payload: VectorDatabaseTemplatePayloadEntity = Field(
 		title="payload", description="Payload for the entity within the 'templates' collection"

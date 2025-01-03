@@ -12,8 +12,8 @@ This is python-api-template documentation.
     :toctree: _autosummary
     :recursive:
 
-    src.presentation presentation
-    src.application application
+    src.presentation
+    src.application
     src.infrastructure
     src.persistence
     src.domain

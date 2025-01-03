@@ -1,4 +1,4 @@
-import redis
+import aioredis
 
 from src.domain.entities.key_value_entity import KeyValueEntity
 from src.domain.errors.generic_errors import GenericErrors
@@ -15,16 +15,14 @@ class RedisClient(metaclass=Singleton):
 	"""
 
 	def __init__(self):
-		self.redis = redis.Redis(
-			host=SETTINGS.REDIS_DB_HOST,
-			username=SETTINGS.REDIS_DB_USER,
-			password=SETTINGS.REDIS_DB_PASSWORD,
-			port=SETTINGS.REDIS_DB_PORT,
-			db=SETTINGS.REDIS_DB_NAME,
+		""" """
+
+		self.client = aioredis.from_url(
+			url=f"redis://{SETTINGS.REDIS_DB_USER}:{SETTINGS.REDIS_DB_PASSWORD}@{SETTINGS.REDIS_DB_HOST}:{SETTINGS.REDIS_DB_PORT}/{SETTINGS.REDIS_DB_NAME}"
 		)
 
 	@exception_handler
-	def get(self, key: str) -> Result[str]:
+	async def get(self, key: str) -> Result[str]:
 		"""
 		Retrieve the value associated to the given key.
 
@@ -35,19 +33,21 @@ class RedisClient(metaclass=Singleton):
 		"""
 
 		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: key={key}")
 
-		value = self.redis.get(name=key)
+		value = await self.client.get(name=key)
 
 		if value is None:
 			logger.error(msg=f"Entry with key={key} does not exist.")
 			return Result.fail(error=GenericErrors.not_found_error(key=key))
 
 		logger.info(msg="End")
+		logger.debug(msg=f"Return value={value}")
 
 		return Result.ok(value=value)
 
 	@exception_handler
-	def set(self, key: str, value: str) -> Result[KeyValueEntity]:
+	async def set(self, key: str, value: str) -> Result[KeyValueEntity]:
 		"""
 		Set the value associated to the given key.
 
@@ -59,9 +59,11 @@ class RedisClient(metaclass=Singleton):
 		"""
 
 		logger.info(msg="Start")
+		logger.debug(msg=f"Input params: key={key}, value={value}")
 
-		self.redis.set(name=key, value=value)
+		await self.client.set(name=key, value=value)
 
 		logger.info(msg="End")
+		logger.debug(msg=f"Return value={value}")
 
 		return Result.ok(value=KeyValueEntity(key=key, value=value))

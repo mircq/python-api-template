@@ -7,7 +7,6 @@ from src.domain.utilities.singleton import Singleton
 from beanie import init_beanie
 
 
-
 class NoSQLDatabaseManager(metaclass=Singleton):
 	"""
 	Utility class to manage connection to NoSQL database connection.

@@ -4,11 +4,17 @@ from src.presentation.DTOs.templates.sql.delete_templates_output_dto import Dele
 
 
 class DeleteTemplateMappers:
-	""" """
+	"""Mappers to transform TemplateEntity into DeleteTemplateOutputDTO, or DeleteTemplateInputDTO into TemplateEntity"""
 
 	@staticmethod
 	def to_dto(entity: TemplateEntity) -> DeleteTemplateOutputDTO:
-		""" """
+		"""
+		Transforms a TemplateEntity object into a DeleteTemplateOutputDTO.
+
+		:param TemplateEntity entity: object to be transformed.
+		:return: a DeleteTemplateOutputDTO object obtained by the given TemplateEntity object.
+		:rtype: DeleteTemplateOutputDTO
+		"""
 
 		logger.info(msg="Start")
 		logger.debug(msg=f"Input params: entity={entity}")

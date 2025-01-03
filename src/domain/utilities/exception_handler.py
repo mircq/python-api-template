@@ -9,6 +9,7 @@ from src.domain.utilities.logger import logger
 def exception_handler(func):
 	"""
 	Decorator for managing function failures.
+
 	:param func:
 	:return:
 	"""

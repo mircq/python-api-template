@@ -5,6 +5,8 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+	""" """
+
 	PORT: int = Field(title="PORT", description="Port on which the microservice is exposed.", default=8000)
 
 	PRODUCTION_MODE: bool = Field(

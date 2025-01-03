@@ -4,11 +4,17 @@ from src.presentation.DTOs.templates.sql.patch_templates_output_dto import Patch
 
 
 class PatchTemplateMappers:
-	""" """
+	"""Mappers to transform TemplateEntity into PatchTemplateOutputDTO, or PatchTemplateInputDTO into TemplateEntity"""
 
 	@staticmethod
 	def to_dto(entity: TemplateEntity) -> PatchTemplateOutputDTO:
-		""" """
+		"""
+		Transforms a TemplateEntity object into a GetTemplateOutputDTO.
+
+		:param TemplateEntity entity: object to be transformed.
+		:return: a GetTemplateOutputDTO object obtained by the given TemplateEntity object.
+		:rtype: GetTemplateOutputDTO
+		"""
 
 		logger.info(msg="Start")
 		logger.debug(msg=f"Input params: entity={entity}")

@@ -2,9 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class VectorDatabaseTemplatePayloadEntity(BaseModel):
-	"""
-	Payload for a document within the 'templates' collection.
-	"""
+	"""Represents the payload for a document within the ``templates`` collection."""
 
 	text: str = Field(title="text", description="Content of the document")
 

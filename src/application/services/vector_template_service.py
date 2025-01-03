@@ -13,8 +13,8 @@ class VectorTemplateService:
 	"""
 
 	# region POST
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def post(text: str) -> Result[list[VectorDatabaseTemplateEntity]]:
 		"""
 		Create embeddings for the given entity.
@@ -43,8 +43,8 @@ class VectorTemplateService:
 	# endregion
 
 	# region DELETE
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def delete(id: UUID4) -> Result[VectorDatabaseTemplateEntity]:
 		"""
 		Delete the point whose id is passed as parameter from the Vector database.
@@ -66,8 +66,8 @@ class VectorTemplateService:
 	# endregion
 
 	# region QUERY
-	@exception_handler
 	@staticmethod
+	@exception_handler
 	async def query(text: str) -> Result[list[VectorDatabaseTemplateEntity]]:
 		"""
 		Query Vector database for points similar to the given query.
