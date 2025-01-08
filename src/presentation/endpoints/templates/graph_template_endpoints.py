@@ -1,46 +1,46 @@
 from fastapi import APIRouter, HTTPException, Body, Path
 from pydantic import UUID4
 
-from src.application.services.nosql_template_service import NoSQLTemplateService
+from src.application.services.graph_template_service import GraphTemplateService
 from src.domain.entities.patch_entity import PatchEntity
 from src.domain.entities.template_entity import TemplateEntity
 from src.domain.results.result import Result
 from src.domain.utilities.logger import logger
 from src.presentation.DTOs.generic.patch_dto import PatchDTO
-from src.presentation.DTOs.templates.nosql.delete_templates_output_dto import DeleteTemplateOutputDTO
-from src.presentation.DTOs.templates.nosql.get_templates_output_dto import GetTemplateOutputDTO
-from src.presentation.DTOs.templates.nosql.patch_templates_output_dto import PatchTemplateOutputDTO
-from src.presentation.DTOs.templates.nosql.post_templates_input_dto import PostTemplateInputDTO
-from src.presentation.DTOs.templates.nosql.post_templates_output_dto import PostTemplateOutputDTO
-from src.presentation.DTOs.templates.nosql.put_templates_input_dto import PutTemplateInputDTO
-from src.presentation.DTOs.templates.nosql.put_templates_output_dto import PutTemplateOutputDTO
-from src.presentation.examples.templates.nosql.delete_templates_request_examples import DELETE_TEMPLATES_PATH_EXAMPLE
-from src.presentation.examples.templates.nosql.delete_templates_response_examples import (
+from src.presentation.DTOs.templates.graph.delete_templates_output_dto import DeleteTemplateOutputDTO
+from src.presentation.DTOs.templates.graph.get_templates_output_dto import GetTemplateOutputDTO
+from src.presentation.DTOs.templates.graph.patch_templates_output_dto import PatchTemplateOutputDTO
+from src.presentation.DTOs.templates.graph.post_templates_input_dto import PostTemplateInputDTO
+from src.presentation.DTOs.templates.graph.post_templates_output_dto import PostTemplateOutputDTO
+from src.presentation.DTOs.templates.graph.put_templates_input_dto import PutTemplateInputDTO
+from src.presentation.DTOs.templates.graph.put_templates_output_dto import PutTemplateOutputDTO
+from src.presentation.examples.templates.graph.delete_templates_request_examples import DELETE_TEMPLATES_PATH_EXAMPLE
+from src.presentation.examples.templates.graph.delete_templates_response_examples import (
 	DELETE_TEMPLATES_RESPONSE_EXAMPLES,
 )
-from src.presentation.examples.templates.nosql.get_templates_request_examples import GET_TEMPLATES_PATH_EXAMPLE
-from src.presentation.examples.templates.nosql.get_templates_response_examples import GET_TEMPLATES_RESPONSE_EXAMPLES
-from src.presentation.examples.templates.nosql.patch_templates_request_examples import (
+from src.presentation.examples.templates.graph.get_templates_request_examples import GET_TEMPLATES_PATH_EXAMPLE
+from src.presentation.examples.templates.graph.get_templates_response_examples import GET_TEMPLATES_RESPONSE_EXAMPLES
+from src.presentation.examples.templates.graph.patch_templates_request_examples import (
 	PATCH_TEMPLATES_PATH_EXAMPLE,
 	PATCH_TEMPLATES_BODY_EXAMPLES,
 )
-from src.presentation.examples.templates.nosql.patch_templates_response_examples import (
+from src.presentation.examples.templates.graph.patch_templates_response_examples import (
 	PATCH_TEMPLATES_RESPONSE_EXAMPLES,
 )
-from src.presentation.examples.templates.nosql.post_templates_request_examples import POST_TEMPLATES_BODY_EXAMPLES
-from src.presentation.examples.templates.nosql.post_templates_response_examples import POST_TEMPLATES_RESPONSE_EXAMPLES
-from src.presentation.examples.templates.nosql.put_templates_request_examples import (
+from src.presentation.examples.templates.graph.post_templates_request_examples import POST_TEMPLATES_BODY_EXAMPLES
+from src.presentation.examples.templates.graph.post_templates_response_examples import POST_TEMPLATES_RESPONSE_EXAMPLES
+from src.presentation.examples.templates.graph.put_templates_request_examples import (
 	PUT_TEMPLATES_PATH_EXAMPLE,
 	PUT_TEMPLATES_BODY_EXAMPLES,
 )
-from src.presentation.examples.templates.nosql.put_templates_response_examples import PUT_TEMPLATES_RESPONSE_EXAMPLES
+from src.presentation.examples.templates.graph.put_templates_response_examples import PUT_TEMPLATES_RESPONSE_EXAMPLES
 from src.presentation.mappers.generic.patch_mappers import PatchMappers
 
-from src.presentation.mappers.templates.nosql.delete_templates_mappers import DeleteTemplateMappers
-from src.presentation.mappers.templates.nosql.get_templates_mappers import GetTemplateMappers
-from src.presentation.mappers.templates.nosql.patch_templates_mappers import PatchTemplateMappers
-from src.presentation.mappers.templates.nosql.post_template_mappers import PostTemplateMappers
-from src.presentation.mappers.templates.nosql.put_templates_mappers import PutTemplateMappers
+from src.presentation.mappers.templates.graph.delete_templates_mappers import DeleteTemplateMappers
+from src.presentation.mappers.templates.graph.get_templates_mappers import GetTemplateMappers
+from src.presentation.mappers.templates.graph.patch_templates_mappers import PatchTemplateMappers
+from src.presentation.mappers.templates.graph.post_template_mappers import PostTemplateMappers
+from src.presentation.mappers.templates.graph.put_templates_mappers import PutTemplateMappers
 
 graph_template_router = APIRouter(prefix="/graph/templates", tags=["Graph"])
 
@@ -69,7 +69,7 @@ async def create_template(
 
 	entity: TemplateEntity = PostTemplateMappers.to_entity(dto=dto)
 
-	result: Result[TemplateEntity] = await NoSQLTemplateService.post(entity=entity)
+	result: Result[TemplateEntity] = await GraphTemplateService.post(entity=entity)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -103,7 +103,7 @@ async def get_template(id: UUID4 = Path(example=GET_TEMPLATES_PATH_EXAMPLE)) -> 
 
 	logger.info(msg="Calling GET /graph/templates")
 
-	result: Result[TemplateEntity] = await NoSQLTemplateService.get(id=id)
+	result: Result[TemplateEntity] = await GraphTemplateService.get(id=id)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -137,7 +137,7 @@ async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE
 
 	logger.info(msg="Calling DELETE /graph/templates")
 
-	result: Result[TemplateEntity] = await NoSQLTemplateService.delete(id=id)
+	result: Result[TemplateEntity] = await GraphTemplateService.delete(id=id)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -177,7 +177,7 @@ async def put_template(
 
 	entity: TemplateEntity = PutTemplateMappers.to_entity(dto=dto)
 
-	result: Result[TemplateEntity] = await NoSQLTemplateService.put(id=id, entity=entity)
+	result: Result[TemplateEntity] = await GraphTemplateService.put(id=id, entity=entity)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -217,7 +217,7 @@ async def patch_template(
 
 	entities: list[PatchEntity] = [PatchMappers.to_entity(dto=patch) for patch in dto]
 
-	result: Result[TemplateEntity] = await NoSQLTemplateService.patch(id=id, patches=entities)
+	result: Result[TemplateEntity] = await GraphTemplateService.patch(id=id, patches=entities)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
