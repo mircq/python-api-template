@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings
 
 
@@ -35,7 +35,7 @@ class Settings(BaseSettings):
 		title="RELATIONAL_DB_USER", description="Username for accessing relational database.", default=None
 	)
 
-	RELATIONAL_DB_PASSWORD: str | None = Field(
+	RELATIONAL_DB_PASSWORD: SecretStr = Field(
 		title="RELATIONAL_DB_PASSWORD", description="Password for accessing relational database.", default=None
 	)
 
@@ -55,7 +55,7 @@ class Settings(BaseSettings):
 		title="VECTOR_DB_PORT", description="Port on which the vector database is exposed.", default=None
 	)
 
-	VECTOR_DB_APIKEY: str | None = Field(
+	VECTOR_DB_APIKEY: SecretStr = Field(
 		title="VECTOR_DB_APIKEY", description="Api key for accessing vector database.", default=None
 	)
 
@@ -77,7 +77,7 @@ class Settings(BaseSettings):
 		title="REDIS_DB_USER", description="Username for accessing Redis database.", default=None
 	)
 
-	REDIS_DB_PASSWORD: str | None = Field(
+	REDIS_DB_PASSWORD: SecretStr = Field(
 		title="REDIS_DB_PASSWORD", description="Password for accessing Redis database.", default=None
 	)
 
@@ -99,9 +99,18 @@ class Settings(BaseSettings):
 
 	NOSQL_DB_USER: str | None = Field()
 
-	NOSQL_DB_PASSWORD: str | None = Field()
+	NOSQL_DB_PASSWORD: SecretStr = Field()
 
 	NOSQL_DB_NAME: str | None = Field()
+
+	# endregion
+
+	# region GRAPH
+
+	GRAPH_DB_HOST: str | None = Field()
+	GRAPH_DB_PORT: int = Field()
+	GRAPH_DB_USER: str = Field()
+	GRAPH_DB_PASSWORD: SecretStr = Field()
 
 	# endregion
 

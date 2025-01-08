@@ -17,15 +17,16 @@ dependencies = [
 
     # Persistence
     "sqlalchemy==2.0.36",
-    "sqlmodel==0.0.22",
+    "sqlmodel==0.0.22",     # if using Postgres
     "psycopg2-binary==2.9.10",
     "asyncio==3.4.3",
     "asyncpg==0.30.0",
-    "qdrant-client==1.12.1",
+    "qdrant-client==1.12.1",    # if using Qdrant
     "beanie==1.27.0",   # if using MongoDB
+    "neomodel==5.4.2",  # if using Neo4J
 
     # Infrastructure
-    "aioredis==2.0.1",
+    "aioredis==2.0.1",  # if using Redis
 
     # Domain
     "pydantic-settings==2.6.1",
