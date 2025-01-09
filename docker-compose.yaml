@@ -38,6 +38,12 @@ services:
       - VECTOR_DB_PORT=6333
       - VECTOR_DB_APIKEY=qdrant_api_key
       - VECTOR_DB_COLLECTION_NAME=template
+      - REDIS_DB_USER=redis
+      - REDIS_DB_PASSWORD=aa
+      - GRAPH_DB_HOST=neo4j
+      - GRAPH_DB_PORT=7474
+      - GRAPH_DB_USER=neo4j
+      - GRAPH_DB_PASSWORD=neo4_password
       - EMBEDDER_HOST=http://llm
       - EMBEDDER_PORT=11434
       - EMBEDDER_NAME=mxbai-embed-large
@@ -136,13 +142,13 @@ services:
       embedder:
         condition: service_healthy
   neo4j:
-    image: neo4j:latest
+    image: neo4j:5.26
     hostname: neo4j
     container_name: neo4j
     networks:
       - template-network
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:7474/", "||", "exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1"]
       interval: 1s
       timeout: 10s
       retries: 20
