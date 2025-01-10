@@ -26,7 +26,7 @@ dependencies = [
     "neomodel==5.4.2",  # if using Neo4J
 
     # Infrastructure
-    "aioredis==2.0.1",  # if using Redis
+    "redis==5.2.0",  # if using Redis
 
     # Domain
     "pydantic-settings==2.6.1",

@@ -1,0 +1,7 @@
+.venv
+mongodb_data
+neo4j_data
+ollama_embedder_data
+postgres_data
+qdrant_data
+redis_data

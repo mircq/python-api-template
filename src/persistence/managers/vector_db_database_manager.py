@@ -22,7 +22,7 @@ class VectorDBDatabaseManager(metaclass=Singleton):
 		self.async_client = qdrant_client.AsyncQdrantClient(
 			location=SETTINGS.VECTOR_DB_HOST,
 			port=SETTINGS.VECTOR_DB_PORT,
-			api_key=SETTINGS.VECTOR_DB_APIKEY,
+			api_key=SETTINGS.VECTOR_DB_APIKEY.get_secret_value(),
 			timeout=10,
 			https=SETTINGS.PRODUCTION_MODE,
 		)
@@ -30,7 +30,7 @@ class VectorDBDatabaseManager(metaclass=Singleton):
 		self.sync_client = qdrant_client.QdrantClient(
 			location=SETTINGS.VECTOR_DB_HOST,
 			port=SETTINGS.VECTOR_DB_PORT,
-			api_key=SETTINGS.VECTOR_DB_APIKEY,
+			api_key=SETTINGS.VECTOR_DB_APIKEY.get_secret_value(),
 			timeout=10,
 			https=SETTINGS.PRODUCTION_MODE,
 		)
@@ -41,6 +41,7 @@ class VectorDBDatabaseManager(metaclass=Singleton):
 
 		if response.status_code == 200:
 			logger.info(msg="Qdrant is healthy")
+			return
 
 		logger.error(msg="Qdrant is not healthy")
 		raise Exception

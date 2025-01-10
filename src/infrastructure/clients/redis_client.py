@@ -1,4 +1,4 @@
-import aioredis
+import redis.asyncio as redis
 
 from src.domain.entities.key_value_entity import KeyValueEntity
 from src.domain.errors.generic_errors import GenericErrors
@@ -17,8 +17,12 @@ class RedisClient(metaclass=Singleton):
 	def __init__(self):
 		""" """
 
-		self.client = aioredis.from_url(
-			url=f"redis://{SETTINGS.REDIS_DB_USER}:{SETTINGS.REDIS_DB_PASSWORD}@{SETTINGS.REDIS_DB_HOST}:{SETTINGS.REDIS_DB_PORT}/{SETTINGS.REDIS_DB_NAME}"
+		self.client = redis.Redis(
+			host=SETTINGS.REDIS_DB_HOST,
+			port=SETTINGS.REDIS_DB_PORT,
+			username=SETTINGS.REDIS_DB_USER,
+			password=SETTINGS.REDIS_DB_PASSWORD.get_secret_value(),
+			db=SETTINGS.REDIS_DB_NAME
 		)
 
 	@exception_handler

@@ -6,10 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.domain.utilities.logger import logger
 from src.domain.utilities.settings import SETTINGS
 from src.infrastructure.clients.langchain_client import LangchainClient
+from src.infrastructure.clients.redis_client import RedisClient
+from src.persistence.managers.graph_database_manager import GraphDatabaseManager
 from src.persistence.managers.nosql_database_manager import NoSQLDatabaseManager
 from src.persistence.managers.sql_database_manager import SQLDatabaseManager
 from src.persistence.managers.vector_db_database_manager import VectorDBDatabaseManager
 from src.presentation.endpoints.health.health_endpoints import health_router
+from src.presentation.endpoints.templates.graph_template_endpoints import graph_template_router
 from src.presentation.endpoints.templates.sql_template_endpoints import sql_template_router
 from src.presentation.endpoints.templates.nosql_template_endpoints import nosql_template_router
 from src.presentation.endpoints.templates.vector_template_endpoints import vector_template_router
@@ -41,6 +44,16 @@ async def lifespan(app: FastAPI):
 	await VectorDBDatabaseManager().create_collection(collection_name=SETTINGS.VECTOR_DB_COLLECTION_NAME)
 	logger.info(msg="Vector database connection correctly initialized.")
 
+	# Initialize Graph database connection
+	logger.info(msg="Initializing Graph database connection.")
+	GraphDatabaseManager()
+	logger.info(msg="Graph database connection correctly initialized.")
+
+	# Initialize Redis connection
+	logger.info(msg="Initializing Redis connection.")
+	RedisClient()
+	logger.info(msg="Redisconnection correctly initialized.")
+
 	# Initialize Langchain agent
 	logger.info(msg="Initializing Langchain agent.")
 	LangchainClient()
@@ -65,6 +78,7 @@ app.include_router(router=health_router)
 app.include_router(router=sql_template_router)
 app.include_router(router=nosql_template_router)
 app.include_router(router=vector_template_router)
+app.include_router(router=graph_template_router)
 
 app.add_middleware(
 	CORSMiddleware,

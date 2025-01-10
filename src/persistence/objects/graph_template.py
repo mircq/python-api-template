@@ -4,5 +4,5 @@ from neomodel import config, AsyncStructuredNode, StringProperty, IntegerPropert
 class Template(AsyncStructuredNode):
 	""" """
 
-	id = UniqueIdProperty()
+	uid = UniqueIdProperty()
 	description = StringProperty(required=True)

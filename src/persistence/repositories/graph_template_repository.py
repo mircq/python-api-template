@@ -28,7 +28,7 @@ class GraphTemplateRepository:
 
 		logger.info(msg="Start")
 
-		template: Template = Template(**entity.model_dump())
+		template: Template = Template(uid=entity.id, description=entity.description)
 
 		await template.save()
 

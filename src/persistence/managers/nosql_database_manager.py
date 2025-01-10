@@ -23,7 +23,7 @@ class NoSQLDatabaseManager(metaclass=Singleton):
 		)
 
 		self.async_client = AsyncIOMotorClient(
-			f"mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}"
+			f"mongodb://{SETTINGS.NOSQL_DB_USER}:{SETTINGS.NOSQL_DB_PASSWORD.get_secret_value()}@{SETTINGS.NOSQL_DB_HOST}:{SETTINGS.NOSQL_DB_PORT}"
 		)
 
 		logger.info(msg="End")

@@ -38,8 +38,11 @@ services:
       - VECTOR_DB_PORT=6333
       - VECTOR_DB_APIKEY=qdrant_api_key
       - VECTOR_DB_COLLECTION_NAME=template
-      - REDIS_DB_USER=redis
-      - REDIS_DB_PASSWORD=aa
+      - REDIS_DB_USER=default
+      - REDIS_DB_PASSWORD=redis_password
+      - REDIS_DB_HOST=redis
+      - REDIS_DB_NAME=0
+      - REDIS_DB_PORT=6379
       - GRAPH_DB_HOST=neo4j
       - GRAPH_DB_PORT=7474
       - GRAPH_DB_USER=neo4j
@@ -163,6 +166,20 @@ services:
     ports:
       - "7474:7474"
       - "7687:7687"
+  redis:
+    image: redis:6.2
+    hostname: redis
+    container_name: redis
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass redis_password
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - ./redis_data:/data
 networks:
   template-network:
     driver: bridge

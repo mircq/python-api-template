@@ -69,24 +69,24 @@ class Settings(BaseSettings):
 
 	# region KEY_VALUE_DB
 
-	REDIS_DB_HOST: str | None = Field(
-		title="REDIS_DB_HOST", description="Host on which the Redis database is deployed.", default=None
+	REDIS_DB_HOST: str = Field(
+		title="REDIS_DB_HOST", description="Host on which the Redis database is deployed."
 	)
 
-	REDIS_DB_USER: str | None = Field(
-		title="REDIS_DB_USER", description="Username for accessing Redis database.", default=None
+	REDIS_DB_USER: str = Field(
+		title="REDIS_DB_USER", description="Username for accessing Redis database."
 	)
 
 	REDIS_DB_PASSWORD: SecretStr = Field(
-		title="REDIS_DB_PASSWORD", description="Password for accessing Redis database.", default=None
+		title="REDIS_DB_PASSWORD", description="Password for accessing Redis database."
 	)
 
-	REDIS_DB_PORT: int | None = Field(
-		title="REDIS_DB_PORT", description="Port on which the Redis database is exposed.", default=None
+	REDIS_DB_PORT: int = Field(
+		title="REDIS_DB_PORT", description="Port on which the Redis database is exposed."
 	)
 
-	REDIS_DB_NAME: int | None = Field(
-		title="REDIS_DB_NAME", description="Name of the relational database.", default=None
+	REDIS_DB_NAME: int = Field(
+		title="REDIS_DB_NAME", description="Name of the relational database."
 	)
 
 	# endregion
