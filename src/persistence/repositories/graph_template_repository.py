@@ -54,7 +54,7 @@ class GraphTemplateRepository:
 
 		logger.info(msg="Start")
 
-		result: Template = await Template.nodes.get_or_none(id=id)
+		result: Template = await Template.nodes.get_or_none(uid=id)
 
 		if result is None:
 			logger.error(msg=f"Entry of type template with key={id} does not exist.")
@@ -62,7 +62,7 @@ class GraphTemplateRepository:
 
 		logger.info(msg="End")
 
-		template: TemplateEntity = TemplateEntity(**result.model_dump())
+		template: TemplateEntity = TemplateEntity(id=result.uid, description=result.description)
 
 		return Result.ok(value=template)
 
