@@ -27,7 +27,7 @@ services:
       - RELATIONAL_DB_HOST=postgres
       - RELATIONAL_DB_PORT=5432
       - RELATIONAL_DB_USER=postgres
-      - RELATIONAL_DB_PASSWORD=postgres
+      - RELATIONAL_DB_PASSWORD=postgres_password
       - RELATIONAL_DB_NAME=template
       - NOSQL_DB_HOST=mongodb
       - NOSQL_DB_PORT=27017
@@ -60,10 +60,11 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+      - ./postgres_multiple_databases:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=postgres_password
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=template
+      - POSTGRES_MULTIPLE_DATABASES=template, keycloak
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d template -U postgres"]
       interval: 5s
@@ -180,6 +181,35 @@ services:
       retries: 5
     volumes:
       - ./redis_data:/data
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.7
+    container_name: keycloak
+    hostname: keycloak
+    networks:
+      - template-network
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:postgres_password@postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+
+      KC_LOG_LEVEL: info
+      KC_METRICS_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
 networks:
   template-network:
     driver: bridge

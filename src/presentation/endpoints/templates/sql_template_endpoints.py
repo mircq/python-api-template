@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Body, Path
+from fastapi import APIRouter, HTTPException, Body, Path, Depends
 from pydantic import UUID4
 
 from src.application.services.template_service import TemplateService
@@ -14,6 +14,7 @@ from src.presentation.DTOs.templates.sql.post_templates_input_dto import PostTem
 from src.presentation.DTOs.templates.sql.post_templates_output_dto import PostTemplateOutputDTO
 from src.presentation.DTOs.templates.sql.put_templates_input_dto import PutTemplateInputDTO
 from src.presentation.DTOs.templates.sql.put_templates_output_dto import PutTemplateOutputDTO
+from src.presentation.authentication.authentication import authorize
 from src.presentation.examples.templates.sql.delete_templates_request_examples import DELETE_TEMPLATES_PATH_EXAMPLE
 from src.presentation.examples.templates.sql.delete_templates_response_examples import (
 	DELETE_TEMPLATES_RESPONSE_EXAMPLES,
@@ -39,8 +40,9 @@ from src.presentation.mappers.templates.sql.get_templates_mappers import GetTemp
 from src.presentation.mappers.templates.sql.patch_templates_mappers import PatchTemplateMappers
 from src.presentation.mappers.templates.sql.post_template_mappers import PostTemplateMappers
 from src.presentation.mappers.templates.sql.put_templates_mappers import PutTemplateMappers
+from src.presentation.utils.authentication_type import AuthenticationType
 
-sql_template_router = APIRouter(prefix="/sql/templates", tags=["SQL"])
+sql_template_router = APIRouter(prefix="/sql/templates", tags=["SQL"], dependencies=[Depends(authorize)])
 
 
 # region POST
@@ -50,6 +52,7 @@ sql_template_router = APIRouter(prefix="/sql/templates", tags=["SQL"])
 	description="Create a new template.",
 	status_code=201,
 	responses=POST_TEMPLATES_RESPONSE_EXAMPLES,
+	openapi_extra={"authentication_type": AuthenticationType.API_KEY}
 )
 async def create_template(
 	dto: PostTemplateInputDTO = Body(examples=POST_TEMPLATES_BODY_EXAMPLES),
