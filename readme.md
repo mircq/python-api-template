@@ -70,7 +70,14 @@ uv sync
 
 ## Launching the application
 
-To start the server, launch the following command:
+In order to launch the entire application (server, databases, models), you need to install Docker.
+After Docker has been installed and launched, run the following command from project root:
+
+```shell
+docker compose up
+```
+
+If you want to start the server locally, launch the following command:
 
 ```shell
 python main.py
