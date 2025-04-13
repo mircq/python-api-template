@@ -6,3 +6,4 @@ postgres_data
 qdrant_data
 redis_data
 uv.lock
+.idea
