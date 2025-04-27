@@ -1,5 +1,8 @@
+from typing import Type
+
 from pydantic import UUID4
 
+from src.application.repositories.i_graph_template_repository import IGraphTemplateRepository
 from src.domain.entities.patch_entity import PatchEntity
 from src.domain.entities.template_entity import TemplateEntity
 from src.domain.results.result import Result
@@ -14,10 +17,12 @@ class GraphTemplateService:
 	implementing some logic.
 	"""
 
+	def __init__(self, repository: Type[IGraphTemplateRepository]):
+		self.repository = repository
+
 	# region POST
-	@staticmethod
 	@exception_handler
-	async def post(entity: TemplateEntity) -> Result[TemplateEntity]:
+	async def post(self, entity: TemplateEntity) -> Result[TemplateEntity]:
 		"""
 		Create a new template.
 
@@ -29,7 +34,7 @@ class GraphTemplateService:
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await GraphTemplateRepository.post(entity=entity)
+		result: Result[TemplateEntity] = await self.repository.post(entity=entity)
 
 		logger.info(msg="End")
 
@@ -38,9 +43,8 @@ class GraphTemplateService:
 	# endregion
 
 	# region GET
-	@staticmethod
 	@exception_handler
-	async def get(id: UUID4) -> Result[TemplateEntity]:
+	async def get(self, id: UUID4) -> Result[TemplateEntity]:
 		"""
 		Retrieve a template from its id.
 
@@ -52,7 +56,7 @@ class GraphTemplateService:
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await GraphTemplateRepository.get(id=id)
+		result: Result[TemplateEntity] = await self.repository.get(id=id)
 
 		logger.info(msg="End")
 
@@ -61,9 +65,8 @@ class GraphTemplateService:
 	# endregion
 
 	# region DELETE
-	@staticmethod
 	@exception_handler
-	async def delete(id: UUID4) -> Result[TemplateEntity]:
+	async def delete(self, id: UUID4) -> Result[TemplateEntity]:
 		"""
 		Delete a template from its id.
 
@@ -75,7 +78,7 @@ class GraphTemplateService:
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await GraphTemplateRepository.delete(id=id)
+		result: Result[TemplateEntity] = await self.repository.delete(id=id)
 
 		logger.info(msg="End")
 
@@ -84,9 +87,8 @@ class GraphTemplateService:
 	# endregion
 
 	# region PUT
-	@staticmethod
 	@exception_handler
-	async def put(id: UUID4, entity: TemplateEntity) -> Result[TemplateEntity]:
+	async def put(self, id: UUID4, entity: TemplateEntity) -> Result[TemplateEntity]:
 		"""
 		Update a template from its id and the given entity.
 
@@ -99,7 +101,7 @@ class GraphTemplateService:
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await GraphTemplateRepository.put(id=id, entity=entity)
+		result: Result[TemplateEntity] = await self.repository.put(id=id, entity=entity)
 
 		logger.info(msg="End")
 
@@ -108,9 +110,8 @@ class GraphTemplateService:
 	# endregion
 
 	# region PATCH
-	@staticmethod
 	@exception_handler
-	async def patch(id: UUID4, patches: list[PatchEntity]) -> Result[TemplateEntity]:
+	async def patch(self, id: UUID4, patches: list[PatchEntity]) -> Result[TemplateEntity]:
 		"""
 		Patch a template from its id and the given entity.
 
@@ -123,7 +124,7 @@ class GraphTemplateService:
 
 		logger.info(msg="Start")
 
-		result: Result[TemplateEntity] = await GraphTemplateRepository.patch(id=id, patches=patches)
+		result: Result[TemplateEntity] = await self.repository.patch(id=id, patches=patches)
 
 		logger.info(msg="End")
 

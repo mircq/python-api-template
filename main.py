@@ -3,6 +3,10 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from container import Container
+from dependencies import get_sql_template_service, get_nosql_template_service, get_graph_template_service, \
+	get_vector_template_service
 from src.domain.utilities.logger import logger
 from src.domain.utilities.settings import SETTINGS
 from src.infrastructure.clients.langchain_client import LangchainClient
@@ -63,6 +67,7 @@ async def lifespan(app: FastAPI):
 
 	yield
 
+container = Container()
 
 app = FastAPI(
 	title="Python API Template",
@@ -72,6 +77,12 @@ app = FastAPI(
 	version="1.0",
 	lifespan=lifespan,
 )
+
+# override dependencies
+app.dependency_overrides[get_sql_template_service] = lambda: container.sql_template_service()
+app.dependency_overrides[get_nosql_template_service] = lambda: container.nosql_template_repository()
+app.dependency_overrides[get_graph_template_service] = lambda: container.graph_template_service()
+app.dependency_overrides[get_vector_template_service] = lambda: container.vector_template_service()
 
 # Include endpoints routers
 app.include_router(router=health_router)

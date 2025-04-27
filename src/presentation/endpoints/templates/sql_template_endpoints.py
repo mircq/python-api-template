@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Body, Path, Depends
 from pydantic import UUID4
 
-from src.application.services.template_service import TemplateService
+
+from dependencies import get_sql_template_service
+from src.application.services.sql_template_service import SQLTemplateService
 from src.domain.entities.patch_entity import PatchEntity
 from src.domain.entities.template_entity import TemplateEntity
 from src.domain.results.result import Result
@@ -52,10 +54,11 @@ sql_template_router = APIRouter(prefix="/sql/templates", tags=["SQL"], dependenc
 	description="Create a new template.",
 	status_code=201,
 	responses=POST_TEMPLATES_RESPONSE_EXAMPLES,
-	openapi_extra={"authentication_type": AuthenticationType.API_KEY}
+	#openapi_extra={"authentication_type": AuthenticationType.API_KEY}
 )
 async def create_template(
 	dto: PostTemplateInputDTO = Body(examples=POST_TEMPLATES_BODY_EXAMPLES),
+	sql_template_service: SQLTemplateService = Depends(get_sql_template_service)
 ) -> PostTemplateOutputDTO:
 	"""
 	Create a new ``template``.
@@ -70,7 +73,7 @@ async def create_template(
 
 	entity: TemplateEntity = PostTemplateMappers.to_entity(dto=dto)
 
-	result: Result[TemplateEntity] = await TemplateService.post(entity=entity)
+	result: Result[TemplateEntity] = await sql_template_service.post(entity=entity)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -92,7 +95,10 @@ async def create_template(
 	description="Retrieve a template from its id.",
 	responses=GET_TEMPLATES_RESPONSE_EXAMPLES,
 )
-async def get_template(id: UUID4 = Path(example=GET_TEMPLATES_PATH_EXAMPLE)) -> GetTemplateOutputDTO:
+async def get_template(
+	id: UUID4 = Path(example=GET_TEMPLATES_PATH_EXAMPLE),
+	sql_template_service: SQLTemplateService = Depends(get_sql_template_service)
+) -> GetTemplateOutputDTO:
 	"""
 	Get the ``template`` with the given id.
 
@@ -104,7 +110,7 @@ async def get_template(id: UUID4 = Path(example=GET_TEMPLATES_PATH_EXAMPLE)) -> 
 
 	logger.info(msg="Calling GET /sql/templates")
 
-	result: Result[TemplateEntity] = await TemplateService.get(id=id)
+	result: Result[TemplateEntity] = await sql_template_service.get(id=id)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -126,7 +132,10 @@ async def get_template(id: UUID4 = Path(example=GET_TEMPLATES_PATH_EXAMPLE)) -> 
 	description="Delete a template with the given id.",
 	responses=DELETE_TEMPLATES_RESPONSE_EXAMPLES,
 )
-async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE)) -> DeleteTemplateOutputDTO:
+async def delete_template(
+	id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE),
+	sql_template_service: SQLTemplateService = Depends(get_sql_template_service)
+) -> DeleteTemplateOutputDTO:
 	"""
 	Delete the ``template`` with the given id.
 
@@ -138,7 +147,7 @@ async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE
 
 	logger.info(msg="Calling DELETE /sql/templates")
 
-	result: Result[TemplateEntity] = await TemplateService.delete(id=id)
+	result: Result[TemplateEntity] = await sql_template_service.delete(id=id)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -163,6 +172,7 @@ async def delete_template(id: UUID4 = Path(example=DELETE_TEMPLATES_PATH_EXAMPLE
 async def put_template(
 	id: UUID4 = Path(example=PUT_TEMPLATES_PATH_EXAMPLE),
 	dto: PutTemplateInputDTO = Body(examples=PUT_TEMPLATES_BODY_EXAMPLES),
+	sql_template_service: SQLTemplateService = Depends(get_sql_template_service)
 ) -> PutTemplateOutputDTO:
 	"""
 	Replace the ``template`` with the given id with the one passed as parameter.
@@ -178,7 +188,7 @@ async def put_template(
 
 	entity: TemplateEntity = PutTemplateMappers.to_entity(dto=dto)
 
-	result: Result[TemplateEntity] = await TemplateService.put(id=id, entity=entity)
+	result: Result[TemplateEntity] = await sql_template_service.put(id=id, entity=entity)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)
@@ -203,6 +213,7 @@ async def put_template(
 async def patch_template(
 	id: UUID4 = Path(example=PATCH_TEMPLATES_PATH_EXAMPLE),
 	dto: list[PatchDTO] = Body(examples=PATCH_TEMPLATES_BODY_EXAMPLES),
+	sql_template_service: SQLTemplateService = Depends(get_sql_template_service)
 ) -> PatchTemplateOutputDTO:
 	"""
 	Apply the patches passed as parameter to the ``template`` with the given id.
@@ -218,7 +229,7 @@ async def patch_template(
 
 	entities: list[PatchEntity] = [PatchMappers.to_entity(dto=patch) for patch in dto]
 
-	result: Result[TemplateEntity] = await TemplateService.patch(id=id, patches=entities)
+	result: Result[TemplateEntity] = await sql_template_service.patch(id=id, patches=entities)
 
 	if result.failed:
 		raise HTTPException(detail=result.error.message, status_code=result.error.status_code)

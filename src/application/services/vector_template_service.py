@@ -1,3 +1,8 @@
+from typing import Type
+
+from src.application.clients.i_langchain_client import ILangchainClient
+from src.application.interfaces.i_vector_template_service import IVectorTemplateService
+from src.application.repositories.i_vector_template_repository import IVectorTemplateRepository
 from src.domain.entities.vector_database_template_entity import VectorDatabaseTemplateEntity
 from src.domain.results.result import Result
 from src.domain.utilities.exception_handler import exception_handler
@@ -7,15 +12,18 @@ from src.persistence.repositories.vector_template_repository import VectorTempla
 from pydantic import UUID4
 
 
-class VectorTemplateService:
+class VectorTemplateService(IVectorTemplateService):
 	"""
 	Forwards requests to Vector database repository and Langchain client.
 	"""
 
+	def __init__(self, repository: Type[IVectorTemplateRepository], langchain_client: ILangchainClient):
+		self.repository = repository
+		self.langchain_client = langchain_client
+
 	# region POST
-	@staticmethod
 	@exception_handler
-	async def post(text: str) -> Result[list[VectorDatabaseTemplateEntity]]:
+	async def post(self, text: str) -> Result[list[VectorDatabaseTemplateEntity]]:
 		"""
 		Create embeddings for the given entity.
 
@@ -27,14 +35,14 @@ class VectorTemplateService:
 
 		logger.info(msg="Start")
 
-		embedding_result: Result[list[VectorDatabaseTemplateEntity]] = await LangchainClient().embed(text=text)
+		embedding_result: Result[list[VectorDatabaseTemplateEntity]] = await self.langchain_client.embed(text=text)
 
 		if embedding_result.failed:
 			logger.error(msg="An error occurred while computing the embeddings.")
 			return Result.fail(error=embedding_result.error)
 
 		for chunk in embedding_result.value:
-			await VectorTemplateRepository.post(entity=chunk)
+			await self.repository.post(entity=chunk)
 
 		logger.info(msg="End")
 
@@ -43,9 +51,8 @@ class VectorTemplateService:
 	# endregion
 
 	# region DELETE
-	@staticmethod
 	@exception_handler
-	async def delete(id: UUID4) -> Result[VectorDatabaseTemplateEntity]:
+	async def delete(self, id: UUID4) -> Result[VectorDatabaseTemplateEntity]:
 		"""
 		Delete the point whose id is passed as parameter from the Vector database.
 
@@ -57,7 +64,7 @@ class VectorTemplateService:
 
 		logger.info(msg="Start")
 
-		result: Result[VectorDatabaseTemplateEntity] = await VectorTemplateRepository.delete(id=id)
+		result: Result[VectorDatabaseTemplateEntity] = await self.repository.delete(id=id)
 
 		logger.info(msg="End")
 
@@ -66,9 +73,8 @@ class VectorTemplateService:
 	# endregion
 
 	# region QUERY
-	@staticmethod
 	@exception_handler
-	async def query(text: str) -> Result[list[VectorDatabaseTemplateEntity]]:
+	async def query(self, text: str) -> Result[list[VectorDatabaseTemplateEntity]]:
 		"""
 		Query Vector database for points similar to the given query.
 
@@ -80,7 +86,7 @@ class VectorTemplateService:
 
 		logger.info(msg="Start")
 
-		embedding_result: Result[list[VectorDatabaseTemplateEntity]] = await LangchainClient().embed(text=text)
+		embedding_result: Result[list[VectorDatabaseTemplateEntity]] = await self.langchain_client.embed(text=text)
 
 		if embedding_result.failed:
 			logger.error(msg="An error occurred while computing the embeddings.")
@@ -88,7 +94,7 @@ class VectorTemplateService:
 
 		query_vector: list[float] = embedding_result.value[0].vector
 
-		result: Result[list[VectorDatabaseTemplateEntity]] = await VectorTemplateRepository.query(vector=query_vector)
+		result: Result[list[VectorDatabaseTemplateEntity]] = await self.repository.query(vector=query_vector)
 
 		logger.info(msg="End")
 

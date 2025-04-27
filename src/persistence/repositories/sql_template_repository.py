@@ -12,7 +12,7 @@ from src.persistence.managers.sql_database_manager import SQLDatabaseManager
 import jsonpatch
 
 
-class TemplateRepository:
+class SQLTemplateRepository:
 	# region POST
 	@exception_handler
 	@staticmethod

@@ -4,7 +4,7 @@ from src.domain.entities.template_entity import TemplateEntity
 from src.domain.results.result import Result
 
 
-class ITemplateService(ABC):
+class ISQLTemplateService(ABC):
 	@abstractmethod
 	async def post(self, entity: TemplateEntity) -> Result[TemplateEntity]:
 		"""
